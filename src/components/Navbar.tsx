@@ -7,8 +7,7 @@ import { Menu, X } from 'lucide-react';
 import Image from 'next/image';
 
 const NAV_LINKS = [
-  { name: 'Systems', href: '#work' },
-  { name: 'Approach', href: '#approach' },
+  { name: 'My Work', href: '#work' },
   { name: 'About', href: '#about' },
   { name: 'Contact', href: '#contact' },
 ];
@@ -66,8 +65,8 @@ export default function Navbar() {
                 unoptimized
               />
             </div>
-            <span className="font-sans text-sm font-semibold tracking-tight text-[#F2F5FB]">
-              Gian<span className="text-[#2DD4BF]">.</span>Bigay
+            <span className="font-sans text-sm font-bold tracking-tight text-[#F2F5FB]">
+              Gian Portfolio
             </span>
           </Link>
 

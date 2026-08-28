@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import AiOrb from './AiOrb';
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,83 +14,98 @@ export default function Hero() {
     offset: ["start start", "end end"]
   });
 
-  // Parallax transforms for headline
-  const line1Y = useTransform(scrollYProgress, [0, 1], [-60, 0]);
-  const line2Y = useTransform(scrollYProgress, [0, 1], [60, 0]);
-
-  // Parallax transforms for floating elements
-  const float1Y = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const float2Y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const float3Y = useTransform(scrollYProgress, [0, 1], [0, -150]);
-  const float4Y = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const float5Y = useTransform(scrollYProgress, [0, 1], [0, -80]);
-
-  const logoOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
-  // Tech stack items
   const stack = [
     'GoHighLevel', 'n8n', 'Make', 'OpenAI', 'Claude', 
     'Airtable', 'Google Sheets', 'WordPress', 'Zapier', 'Notion'
   ];
 
   return (
-    <section className="relative w-full">
-      {/* Part 1: Sticky Headline with Floating Elements */}
-      <div ref={containerRef} className="relative h-[300vh] bg-bg w-full">
-        <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+    <section className="relative w-full overflow-hidden bg-bg">
+      {/* JARVIS Orbiting Hero (Scroll-driven) */}
+      <div ref={containerRef} className="relative h-[300vh] w-full bg-bg">
+        <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
           
-          {/* Floating Elements (Behind) */}
-          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-            {/* Top-left */}
+          {/* Zoom Wrapper (Smooth scaling on scroll) */}
+          <motion.div 
+            style={{ 
+              scale: useTransform(scrollYProgress, [0, 0.5], [1, 6]),
+              opacity: useTransform(scrollYProgress, [0.3, 0.5], [1, 0])
+            }}
+            className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none origin-center"
+          >
+            {/* Continuous Rotation Wrapper */}
             <motion.div 
-              style={{ y: float1Y }}
-              className="absolute top-[10%] left-[5%] w-[35vw] h-[30vh] bg-gradient-to-br from-teal/20 to-cyan/10 rounded-lg" 
-            />
-            {/* Left */}
-            <motion.div 
-              style={{ y: float2Y }}
-              className="absolute top-[40%] -left-[5%] w-[20vw] h-[45vh] bg-gradient-to-br from-amber/20 to-amber/5 rounded-lg" 
-            />
-            {/* Right */}
-            <motion.div 
-              style={{ y: float3Y }}
-              className="absolute top-[20%] right-[10%] w-[25vw] h-[25vh] bg-gradient-to-br from-cyan/20 to-teal/10 rounded-lg" 
-            />
-            {/* Bottom-left */}
-            <motion.div 
-              style={{ y: float4Y }}
-              className="absolute bottom-[10%] left-[20%] w-[20vw] h-[25vh] bg-gradient-to-br from-teal/15 to-cyan/5 rounded-lg" 
-            />
-            {/* Bottom-right */}
-            <motion.div 
-              style={{ y: float5Y }}
-              className="absolute bottom-[15%] right-[5%] w-[15vw] h-[15vh] bg-gradient-to-br from-amber/15 to-teal/10 rounded-lg" 
-            />
-          </div>
+              animate={{ rotate: 360 }}
+              transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              {/* Top */}
+              <motion.div 
+                animate={{ rotate: -360 }}
+                transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                className="absolute -top-[10%] md:top-[10%] w-[40vw] md:w-[15vw] h-[30vh] md:h-[25vh] rounded-xl overflow-hidden shadow-2xl brightness-[0.5] saturate-[0.8]" 
+              >
+                <Image src="/wf-unified.jpg" alt="System" fill className="object-cover" />
+              </motion.div>
+              
+              {/* Right */}
+              <motion.div 
+                animate={{ rotate: -360 }}
+                transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                className="absolute right-[-10%] md:right-[15%] top-[20%] md:top-[25%] w-[35vw] md:w-[18vw] h-[25vh] md:h-[30vh] rounded-xl overflow-hidden shadow-2xl brightness-[0.5] saturate-[0.8]" 
+              >
+                <Image src="/wf-tactical.jpg" alt="System" fill className="object-cover" />
+              </motion.div>
 
-          {/* Center Headline */}
-          <div className="z-10 flex flex-col items-center justify-center font-head font-bold uppercase text-[12vw] md:text-[10vw] text-ink leading-[0.85] text-center w-full">
-            <motion.div 
-              style={{ 
-                y: line1Y, 
-                filter: useTransform(scrollYProgress, [0, 0.2], ['blur(0px)', 'blur(8px)']),
-                opacity: useTransform(scrollYProgress, [0, 0.4], [1, 0]),
-                scale: useTransform(scrollYProgress, [0, 0.4], [1, 0.9])
-              }}
-            >
-              AUTOMATION
+              {/* Bottom Right */}
+              <motion.div 
+                animate={{ rotate: -360 }}
+                transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                className="absolute bottom-[-5%] md:bottom-[10%] right-[10%] md:right-[30%] w-[35vw] md:w-[20vw] h-[20vh] md:h-[25vh] rounded-xl overflow-hidden shadow-2xl brightness-[0.5] saturate-[0.8]" 
+              >
+                <Image src="/wf-newsletter.jpg" alt="System" fill className="object-cover" />
+              </motion.div>
+              
+              {/* Bottom Left */}
+              <motion.div 
+                animate={{ rotate: -360 }}
+                transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                className="absolute bottom-[5%] md:bottom-[15%] left-[0%] md:left-[20%] w-[40vw] md:w-[22vw] h-[25vh] md:h-[30vh] rounded-xl overflow-hidden shadow-2xl brightness-[0.5] saturate-[0.8]" 
+              >
+                <Image src="/out-care-blog.jpg" alt="System" fill className="object-cover" />
+              </motion.div>
+              
+              {/* Left */}
+              <motion.div 
+                animate={{ rotate: -360 }}
+                transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                className="absolute top-[30%] md:top-[40%] left-[-15%] md:left-[10%] w-[30vw] md:w-[16vw] h-[30vh] md:h-[35vh] rounded-xl overflow-hidden shadow-2xl brightness-[0.5] saturate-[0.8]" 
+              >
+                <Image src="/wf-callsummary.jpg" alt="System" fill className="object-cover" />
+              </motion.div>
             </motion.div>
-            <motion.div 
-              style={{ 
-                y: line2Y,
-                filter: useTransform(scrollYProgress, [0, 0.2], ['blur(0px)', 'blur(8px)']),
-                opacity: useTransform(scrollYProgress, [0, 0.4], [1, 0]),
-                scale: useTransform(scrollYProgress, [0, 0.4], [1, 0.9])
-              }}
-            >
-              ENGINEER
-            </motion.div>
-          </div>
+          </motion.div>
+
+          {/* Center J.A.R.V.I.S Orb (Fades out, no laggy scaling) */}
+          <motion.div 
+            className="z-10 absolute inset-0 flex items-center justify-center flex-col pointer-events-auto"
+            style={{ 
+              opacity: useTransform(scrollYProgress, [0.1, 0.4], [1, 0])
+            }}
+          >
+            <Link href="/ai-link" className="block outline-none cursor-pointer">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+              >
+                <AiOrb scale={1.2} interactive={true} />
+              </motion.div>
+            </Link>
+            <div className="absolute top-[65%] text-center w-full">
+               <span className="font-mono text-xs text-teal uppercase tracking-widest animate-pulse drop-shadow-md">Click to initialize</span>
+            </div>
+          </motion.div>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
+
 import WorksList from '@/components/WorksList';
 import { ServicesSection } from '@/components/ServicesSection';
 import TextReveal from '@/components/TextReveal';
@@ -12,6 +13,7 @@ export default function Home() {
     <main className="bg-bg min-h-screen selection:bg-teal/30 selection:text-teal">
       <Navbar />
       <Hero />
+      
       <WorksList />
       <ServicesSection />
       <TextReveal />
