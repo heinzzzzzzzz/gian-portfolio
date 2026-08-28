@@ -64,7 +64,7 @@ export default function TextChat() {
       </Link>
 
       {/* Left: AI Orb */}
-      <div className="w-1/2 h-full flex flex-col items-center justify-center relative z-10 border-r border-line/30 bg-black/20 backdrop-blur-sm">
+      <div className="absolute inset-0 lg:static lg:w-1/2 w-full h-full flex flex-col items-center justify-center z-0 lg:z-10 lg:border-r border-line/30 bg-black/20 backdrop-blur-sm opacity-20 lg:opacity-100 pointer-events-none lg:pointer-events-auto">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -80,7 +80,7 @@ export default function TextChat() {
       </div>
 
       {/* Right: Chat Interface */}
-      <div className="w-1/2 h-full flex flex-col relative z-10 bg-surface/50 backdrop-blur-xl">
+      <div className="w-full lg:w-1/2 h-full flex flex-col relative z-10 bg-transparent lg:bg-surface/50 lg:backdrop-blur-xl">
         
         {/* Chat Header */}
         <div className="w-full h-16 border-b border-line/50 flex items-center px-8 bg-black/40">

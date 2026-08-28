@@ -107,29 +107,15 @@ export default function VoiceCall() {
       </div>
 
       {/* Layout Grid */}
-      <div className="w-full h-full grid grid-cols-3 relative z-10">
+      <div className="w-full h-full flex flex-col lg:grid lg:grid-cols-3 relative z-10 pt-20 lg:pt-0">
         
-        {/* Left Column: User Subtitles */}
-        <div className="flex flex-col justify-end p-8 pb-32 opacity-70">
-          <div className="font-mono text-xs text-mute mb-4 border-b border-line/30 pb-2 uppercase tracking-widest">User Audio Stream</div>
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar">
-            {userMsgs.map(msg => (
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} key={msg.id} className="text-teal font-mono text-sm leading-relaxed">
-                &gt; {msg.text}
-              </motion.div>
-            ))}
-            <div ref={scrollRefLeft} />
-          </div>
-        </div>
-
-        {/* Center Column: The Orb */}
-        <div className="flex flex-col items-center justify-center relative">
-          
+        {/* Center Column: The Orb (Moved to top on mobile via order) */}
+        <div className="order-1 lg:order-2 flex-none lg:flex-1 flex flex-col items-center justify-center relative mt-4 lg:mt-0 z-20">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 1 }}
-            className="mt-12 relative cursor-pointer"
+            className="mt-4 lg:mt-12 relative cursor-pointer"
             onClick={callStatus === 'idle' || callStatus === 'error' ? () => {
               setCallStatus('connecting');
               setErrorMessage('');
@@ -147,7 +133,7 @@ export default function VoiceCall() {
               </div>
             )}
             
-            <div className={callStatus !== 'active' ? 'opacity-50' : ''}>
+            <div className={`transform scale-75 lg:scale-100 ${callStatus !== 'active' ? 'opacity-50' : ''}`}>
               <AiOrb 
                 scale={1.5} 
                 audioLevel={volumeLevel} 
@@ -161,8 +147,8 @@ export default function VoiceCall() {
             </div>
           </motion.div>
 
-          <div className="mt-16 text-center">
-            <div className="font-mono text-xs uppercase tracking-[0.3em] text-cyan/70">
+          <div className="mt-4 lg:mt-16 text-center">
+            <div className="font-mono text-[10px] lg:text-xs uppercase tracking-[0.3em] text-cyan/70">
               Voice Protocol
             </div>
             <div className="text-mute text-xs mt-2 max-w-[200px] mx-auto font-sans">
@@ -177,17 +163,35 @@ export default function VoiceCall() {
           </div>
         </div>
 
-        {/* Right Column: AI Subtitles */}
-        <div className="flex flex-col justify-end p-8 pb-32 opacity-70">
-          <div className="font-mono text-xs text-mute mb-4 border-b border-line/30 pb-2 uppercase tracking-widest text-right">System Output Stream</div>
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar flex flex-col items-end text-right">
-            {aiMsgs.map(msg => (
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} key={msg.id} className="text-cyan font-mono text-sm leading-relaxed">
-                {msg.text} &lt;
-              </motion.div>
-            ))}
-            <div ref={scrollRefRight} />
+        {/* Subtitles Container for Mobile (Splits the remaining space) */}
+        <div className="order-2 lg:contents flex flex-col flex-1 overflow-hidden lg:overflow-visible">
+          
+          {/* Left Column: User Subtitles */}
+          <div className="lg:order-1 flex-1 flex flex-col justify-end p-6 lg:p-8 pb-2 lg:pb-32 opacity-70">
+            <div className="font-mono text-[10px] lg:text-xs text-mute mb-2 lg:mb-4 border-b border-line/30 pb-1 lg:pb-2 uppercase tracking-widest">User Audio Stream</div>
+            <div className="space-y-2 lg:space-y-4 max-h-[25vh] lg:max-h-[60vh] overflow-y-auto no-scrollbar">
+              {userMsgs.map(msg => (
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} key={msg.id} className="text-teal font-mono text-xs lg:text-sm leading-relaxed">
+                  &gt; {msg.text}
+                </motion.div>
+              ))}
+              <div ref={scrollRefLeft} />
+            </div>
           </div>
+
+          {/* Right Column: AI Subtitles */}
+          <div className="lg:order-3 flex-1 flex flex-col justify-start lg:justify-end p-6 lg:p-8 pt-2 lg:pt-8 pb-6 lg:pb-32 opacity-70">
+            <div className="font-mono text-[10px] lg:text-xs text-mute mb-2 lg:mb-4 border-b border-line/30 pb-1 lg:pb-2 uppercase tracking-widest text-right">System Output Stream</div>
+            <div className="space-y-2 lg:space-y-4 max-h-[25vh] lg:max-h-[60vh] overflow-y-auto no-scrollbar flex flex-col items-end text-right">
+              {aiMsgs.map(msg => (
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} key={msg.id} className="text-cyan font-mono text-xs lg:text-sm leading-relaxed">
+                  {msg.text} &lt;
+                </motion.div>
+              ))}
+              <div ref={scrollRefRight} />
+            </div>
+          </div>
+
         </div>
 
       </div>
