@@ -47,7 +47,7 @@ export default function AiOrb({
         animate={{ rotate: 360 }}
         transition={{ duration: rotateSpeed * 1.5, repeat: Infinity, ease: "linear" }}
         className="absolute inset-[0%] rounded-full border border-teal/30"
-        style={{ borderStyle: 'dashed', borderWidth: '2px', borderDasharray: '4 8' }}
+        style={{ borderStyle: 'dashed', borderWidth: '2px' }}
       />
 
       {/* Outer Solid Ring with gaps */}

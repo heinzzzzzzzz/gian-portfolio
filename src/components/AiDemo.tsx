@@ -32,7 +32,7 @@ export default function AiDemo() {
 
   // Initialize Vapi (client-side only)
   useEffect(() => {
-    if (typeof window !== 'undefined' && !vapiRef.current && VAPI_PUBLIC_KEY !== 'YOUR_VAPI_PUBLIC_KEY') {
+    if (typeof window !== 'undefined' && !vapiRef.current) {
       const vapi = new Vapi(VAPI_PUBLIC_KEY);
       vapiRef.current = vapi;
 
@@ -52,10 +52,6 @@ export default function AiDemo() {
       vapiRef.current?.stop();
       setCallStatus('idle');
     } else {
-      if (VAPI_PUBLIC_KEY === 'YOUR_VAPI_PUBLIC_KEY') {
-        alert("Please add your Vapi Public Key and Assistant ID in src/components/AiDemo.tsx to enable voice calls!");
-        return;
-      }
       setCallStatus('connecting');
       try {
         await vapiRef.current?.start(VAPI_ASSISTANT_ID);
