@@ -23,11 +23,13 @@ export default function AiGateway() {
         {/* The Orb - Expanding in from Hero */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1.5, opacity: 1 }}
+          animate={{ scale: 1.2, opacity: 1 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-24"
+          className="mb-8 md:mb-24"
         >
-          <AiOrb scale={1.2} />
+          <div className="scale-75 md:scale-100">
+            <AiOrb scale={1.2} />
+          </div>
         </motion.div>
 
         {/* Interface Menu */}

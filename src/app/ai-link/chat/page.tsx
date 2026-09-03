@@ -18,11 +18,11 @@ export default function TextChat() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isThinking]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent, textOverride?: string) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+    const newMsg = (textOverride || inputValue).trim();
+    if (!newMsg) return;
 
-    const newMsg = inputValue.trim();
     setMessages(prev => [...prev, { role: 'user', content: newMsg }]);
     setInputValue('');
     setIsThinking(true);
@@ -132,9 +132,35 @@ export default function TextChat() {
           <div ref={chatEndRef} />
         </div>
 
-        {/* Chat Input */}
-        <div className="p-6 bg-black/60 border-t border-line/50">
-          <form onSubmit={handleSendMessage} className="relative flex items-center">
+        {/* Chat Input Area */}
+        <div className="p-6 bg-black/60 border-t border-line/50 flex flex-col gap-4">
+          
+          {/* FAQ Suggestions */}
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-line scrollbar-track-transparent">
+            {[
+              "What automation platforms do you use?",
+              "How long does a typical build take?",
+              "What is the pricing for a custom system?",
+              "Are you available for consulting?"
+            ].map((faq, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  setInputValue(faq);
+                  // We need to pass the event but since it's an inline call, let's just trigger submit
+                  // A clean way is to set state, then a ref or just call the function directly
+                  const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+                  handleSendMessage(fakeEvent, faq);
+                }}
+                className="whitespace-nowrap px-4 py-2 rounded-full border border-cyan/20 bg-cyan/5 text-cyan/70 text-xs font-mono hover:bg-cyan/10 hover:text-cyan transition-colors"
+              >
+                {faq}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={(e) => handleSendMessage(e, inputValue)} className="relative flex items-center">
             <div className="absolute left-4 text-cyan opacity-50 font-mono text-sm">&gt;</div>
             <input 
               type="text"

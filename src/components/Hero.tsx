@@ -14,22 +14,27 @@ export default function Hero() {
     offset: ["start start", "end end"]
   });
 
+  const zoomScale = useTransform(scrollYProgress, [0, 1], [1, 7]);
+  const zoomOpacity = useTransform(scrollYProgress, [0.7, 1], [1, 0]);
+  const orbOpacity = useTransform(scrollYProgress, [0.3, 0.8], [1, 0]);
+  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+
   const stack = [
     'GoHighLevel', 'n8n', 'Make', 'OpenAI', 'Claude', 
     'Airtable', 'Google Sheets', 'WordPress', 'Zapier', 'Notion'
   ];
 
   return (
-    <section className="relative w-full overflow-hidden bg-bg">
+    <section className="relative w-full bg-bg">
       {/* JARVIS Orbiting Hero (Scroll-driven) */}
-      <div ref={containerRef} className="relative h-[300vh] w-full bg-bg">
+      <div ref={containerRef} className="relative h-[250vh] w-full bg-bg">
         <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
           
           {/* Zoom Wrapper (Smooth scaling on scroll) */}
           <motion.div 
             style={{ 
-              scale: useTransform(scrollYProgress, [0, 0.5], [1, 6]),
-              opacity: useTransform(scrollYProgress, [0.3, 0.5], [1, 0])
+              scale: zoomScale,
+              opacity: zoomOpacity
             }}
             className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none origin-center"
           >
@@ -86,11 +91,11 @@ export default function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Center J.A.R.V.I.S Orb (Fades out, no laggy scaling) */}
+          {/* Center J.A.R.V.I.S Orb */}
           <motion.div 
             className="z-10 absolute inset-0 flex items-center justify-center flex-col pointer-events-auto"
             style={{ 
-              opacity: useTransform(scrollYProgress, [0.1, 0.4], [1, 0])
+              opacity: orbOpacity
             }}
           >
             <Link href="/ai-link" className="block outline-none cursor-pointer">
@@ -105,6 +110,19 @@ export default function Hero() {
             <div className="absolute top-[65%] text-center w-full">
                <span className="font-mono text-xs text-teal uppercase tracking-widest animate-pulse drop-shadow-md">Click to initialize</span>
             </div>
+          </motion.div>
+
+          {/* Scroll Down Indicator */}
+          <motion.div 
+            style={{ opacity: scrollIndicatorOpacity }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
+          >
+            <span className="font-mono text-xs text-mute uppercase tracking-widest">Scroll to explore</span>
+            <motion.div 
+              animate={{ y: [0, 10, 0] }} 
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              className="w-[1px] h-12 bg-gradient-to-b from-teal/0 via-teal to-teal/0"
+            />
           </motion.div>
         </div>
       </div>
