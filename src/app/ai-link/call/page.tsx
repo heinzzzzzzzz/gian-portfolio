@@ -16,13 +16,25 @@ type TranscriptMsg = {
   text: string;
 };
 
+type VapiMessage = {
+  type: string;
+  transcriptType?: string;
+  role?: 'user' | 'assistant';
+  transcript?: string;
+};
+
+function errorText(e: unknown): string {
+  const o = e as { message?: string; error?: { message?: string } } | null;
+  return o?.message || o?.error?.message || (typeof e === 'object' ? JSON.stringify(e) : String(e));
+}
+
 export default function VoiceCall() {
   const [callStatus, setCallStatus] = useState<'idle' | 'connecting' | 'active' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [transcripts, setTranscripts] = useState<TranscriptMsg[]>([]);
   
-  const vapiRef = useRef<any>(null);
+  const vapiRef = useRef<Vapi | null>(null);
   const scrollRefLeft = useRef<HTMLDivElement>(null);
   const scrollRefRight = useRef<HTMLDivElement>(null);
 
@@ -40,23 +52,19 @@ export default function VoiceCall() {
         setVolumeLevel(level);
       });
 
-      vapi.on('message', (message: any) => {
-        if (message.type === 'transcript') {
-          // Vapi transcript events
-          if (message.transcriptType === 'final') {
-            setTranscripts(prev => [...prev, {
-              id: Date.now().toString(),
-              role: message.role,
-              text: message.transcript
-            }]);
-          }
+      vapi.on('message', (message: VapiMessage) => {
+        if (message.type === 'transcript' && message.transcriptType === 'final' && message.role && message.transcript) {
+          setTranscripts(prev => [...prev, {
+            id: `${Date.now()}-${prev.length}`,
+            role: message.role as 'user' | 'assistant',
+            text: message.transcript as string,
+          }]);
         }
       });
 
-      vapi.on('error', (e: any) => {
+      vapi.on('error', (e: unknown) => {
         console.error(e);
-        const errStr = e?.message || e?.error?.message || (typeof e === 'object' ? JSON.stringify(e) : String(e));
-        setErrorMessage(`Error: ${errStr}`);
+        setErrorMessage(`Error: ${errorText(e)}`);
         setCallStatus('error');
       });
     }
@@ -83,7 +91,7 @@ export default function VoiceCall() {
   const aiMsgs = transcripts.filter(t => t.role === 'assistant');
 
   return (
-    <main className="relative h-screen bg-bg flex overflow-hidden">
+    <main className="theme-dark relative h-screen bg-bg text-ink flex overflow-hidden">
       
       {/* Background ambient grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_100%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
@@ -119,10 +127,9 @@ export default function VoiceCall() {
             onClick={callStatus === 'idle' || callStatus === 'error' ? () => {
               setCallStatus('connecting');
               setErrorMessage('');
-              vapiRef.current?.start(VAPI_ASSISTANT_ID).catch((e: any) => {
+              vapiRef.current?.start(VAPI_ASSISTANT_ID).catch((e: unknown) => {
                 console.error(e);
-                const errStr = e?.message || (typeof e === 'object' ? JSON.stringify(e) : String(e));
-                setErrorMessage(`Error: ${errStr}`);
+                setErrorMessage(`Error: ${errorText(e)}`);
                 setCallStatus('error');
               });
             } : undefined}

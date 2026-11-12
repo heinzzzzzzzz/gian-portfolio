@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Syne, Inter, JetBrains_Mono } from 'next/font/google';
+import { Syne, Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google';
 import './globals.css';
 import SmoothScroll from '../components/SmoothScroll';
 
@@ -24,9 +24,23 @@ const jetbrains = JetBrains_Mono({
   weight: ['400', '500', '600'],
 });
 
+const instrument = Instrument_Serif({
+  subsets: ['latin'],
+  variable: '--font-instrument',
+  display: 'swap',
+  weight: '400',
+  style: ['normal', 'italic'],
+});
+
 export const metadata: Metadata = {
-  title: 'Gian Benedict Bigay — AI Automation Specialist',
-  description: 'I build self-running AI systems for content, distribution, and CRM — at production scale.',
+  title: 'Gian Benedict Bigay — Automation Engineer',
+  description:
+    'Automation Engineer specializing in n8n. I build content pipelines, CRM systems, apps and websites that run themselves. Talk to my AI clone.',
+  openGraph: {
+    title: 'Gian Benedict Bigay — Automation Engineer',
+    description: 'Systems that publish themselves. Automations, apps and websites by Gian Benedict Bigay.',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
@@ -36,7 +50,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${syne.variable} ${inter.variable} ${jetbrains.variable} font-body`}>
+      <body className={`${syne.variable} ${inter.variable} ${jetbrains.variable} ${instrument.variable} font-body`}>
         <div className="grain"></div>
         <SmoothScroll>
           {children}

@@ -1,21 +1,46 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   Palette (Gian's): Soft Sand #F0E5D8 · Mocha Green #474329 · Watermelon Pink #FF6FA6
+   The AI pages flip to a mocha-dark variant via .theme-dark (same accent).
+   ------------------------------------------------------------------ */
 @theme {
-  --color-bg: #06070A;
-  --color-surface: #0A0C12;
-  --color-card: #0E1118;
-  --color-cardhi: #141925;
-  --color-line: #212838;
-  --color-ink: #F2F5FB;
-  --color-mute: #9BA7BF;
-  --color-faint: #5C6883;
-  --color-cyan: #22D3EE;
-  --color-teal: #2DD4BF;
-  --color-amber: #F5B544;
+  --color-bg: #F0E5D8;
+  --color-surface: #E7D9C8;
+  --color-card: #F7EFE5;
+  --color-cardhi: #FFFFFF;
+  --color-line: #D4C4AE;
+  --color-ink: #474329;
+  --color-olive: #474329;
+  --color-mute: #6E6850;
+  --color-faint: #9C957A;
+  --color-accent: #FF6FA6;
+  --color-accent-deep: #F0508F;
+  /* teal/cyan are kept as aliases so the AI orb shares the accent */
+  --color-teal: #FF6FA6;
+  --color-cyan: #FFC2D9;
+  --color-amber: #D7A83B;
 
   --font-head: var(--font-syne), sans-serif;
   --font-body: var(--font-inter), sans-serif;
   --font-mono: var(--font-jetbrains), monospace;
+  --font-serif: var(--font-instrument), Georgia, serif;
+}
+
+/* Mocha-dark variant for the AI-link pages. Tailwind v4 utilities read these
+   variables at use time, so overriding them on an ancestor retunes everything
+   inside it. */
+.theme-dark {
+  --color-bg: #342F1B;
+  --color-surface: #474329;
+  --color-card: #524D30;
+  --color-cardhi: #5E5838;
+  --color-line: #6B6446;
+  --color-ink: #F0E5D8;
+  --color-olive: #E7D9C8;
+  --color-mute: #CFC4A8;
+  --color-faint: #9C957A;
+  color-scheme: dark;
 }
 
 html {
@@ -27,21 +52,19 @@ body {
 }
 
 ::selection {
-  background-color: rgb(45 212 191 / 0.3);
-  color: #F2F5FB;
+  background-color: rgb(255 111 166 / 0.35);
+  color: #474329;
 }
 
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #06070A;
+  background: #e7d9c8;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #212838;
+  background: #bfae95;
   border-radius: 3px;
 }
 
@@ -49,8 +72,8 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
-  opacity: 0.045;
+  z-index: 60;
+  opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
@@ -59,7 +82,37 @@ body {
     transform: translateX(-50%);
   }
 }
+.marquee {
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
 
-.headline-main {
+.headline {
   font-family: var(--font-head);
+  letter-spacing: -0.04em;
+}
+.serif-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.outline-text {
+  -webkit-text-stroke: 1.5px var(--color-olive);
+  color: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
 }

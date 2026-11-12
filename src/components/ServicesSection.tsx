@@ -5,53 +5,58 @@ import { ScrollStackCard } from './ScrollStackCard';
 const services = [
   {
     index: 1,
+    label: 'Automation',
     title: 'CONTENT AUTOMATION',
     number: '225',
     suffix: '+',
-    desc: 'End-to-end pipelines that research, draft, design, and publish across platforms without manual intervention.',
+    desc: 'End-to-end pipelines that research, draft, design and publish across platforms, with a human approval step only where it matters.',
     bgColor: 'bg-card',
-    textColor: 'text-ink'
+    textColor: 'text-ink',
   },
   {
     index: 2,
+    label: 'Automation',
     title: 'DISTRIBUTION SYSTEMS',
-    number: '6',
-    suffix: '',
-    desc: 'One-click publish engines that auto-resize, reformat, and schedule for optimal engagement windows per channel.',
-    bgColor: 'bg-teal',
-    textColor: 'text-bg'
+    number: '368',
+    suffix: '+',
+    desc: 'Scheduling engines that route every approved post to the right channel at the right slot, respecting rate limits.',
+    bgColor: 'bg-accent',
+    textColor: 'text-bg',
   },
   {
     index: 3,
-    title: 'CRM & PIPELINES',
+    label: 'Automation',
+    title: 'CRM & REPORTING',
     number: '8',
     suffix: '',
-    desc: 'Fully automated lead nurture sequences with AI-personalized follow-ups, appointment booking, and stage management.',
-    bgColor: 'bg-amber',
-    textColor: 'text-bg'
+    desc: 'GoHighLevel syncs, Airtable approval boards and daily analytics that land in a sheet before anyone opens a laptop.',
+    bgColor: 'bg-olive',
+    textColor: 'text-bg',
   },
   {
     index: 4,
-    title: 'DATA & REPORTING',
-    number: '368',
-    suffix: '+',
-    desc: 'Automated reporting that pulls metrics, generates AI insights, and delivers formatted reports to stakeholders.',
-    bgColor: 'bg-cyan',
-    textColor: 'text-bg'
-  }
+    label: 'Apps & web',
+    title: 'APPS & WEBSITES',
+    number: '3',
+    suffix: '',
+    desc: 'An offline-first Flutter app, a university booking system and a PHP e-commerce store, built with the same engineering habits as the pipelines.',
+    bgColor: 'bg-ink',
+    textColor: 'text-bg',
+  },
 ];
 
 export function ServicesSection() {
   return (
     <section className="relative w-full">
-      {/* Intro Panel */}
-      <div className="h-screen flex items-center justify-center bg-ink text-bg sticky top-0 z-0">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase font-head text-center px-8">
-          So what do I automate, exactly?
-        </h2>
+      <div className="h-screen flex items-center justify-center bg-surface text-ink sticky top-0 z-0 border-t border-line/60">
+        <div className="text-center px-8">
+          <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent mb-5">What I do</p>
+          <h2 className="headline text-3xl md:text-5xl lg:text-6xl font-extrabold">
+            So what do I build, <span className="serif-italic text-accent font-normal">exactly?</span>
+          </h2>
+        </div>
       </div>
-      
-      {/* Stacked Cards */}
+
       <div className="relative z-10">
         {services.map((service) => (
           <ScrollStackCard key={service.index} {...service} />
