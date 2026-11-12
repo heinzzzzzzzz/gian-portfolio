@@ -56,7 +56,7 @@ export const projects: Project[] = [
     stack: ['Flutter', 'Dart', 'Drift', 'SQLite', 'fl_chart', 'Local notifications'],
     year: '2026',
     role: 'Solo design and build',
-    image: '/work/octi-cover.jpg',
+    image: '/work/octi-wide.jpg',
     gallery: ['/work/octi-onboarding.jpg', '/work/octi-home.jpg', '/work/octi-stageup.jpg', '/work/octi-badge.jpg', '/work/octi-depth.jpg'],
     galleryLayout: 'phone',
   },

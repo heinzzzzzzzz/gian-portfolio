@@ -44,10 +44,10 @@ export default function Navbar() {
           isScrolled ? 'bg-bg/80 backdrop-blur-xl border-b border-line/70' : 'bg-transparent border-b border-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-5 md:px-10 py-4 flex items-center justify-between">
-          <Link href="/#top" className="flex items-center gap-3 z-50 relative">
-            <span className="headline font-extrabold text-lg text-ink">
-              GB<span className="text-accent">.</span>
+        <div className="px-5 md:px-10 py-3 flex items-center justify-between">
+          <Link href="/#top" className="flex items-center gap-3 z-50 relative" aria-label="Gian Bigay, home">
+            <span className="script neon text-[34px] leading-none -rotate-[6deg] pr-1 transition-transform duration-300 hover:-rotate-[2deg] hover:scale-105">
+              GB
             </span>
             <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-[0.22em] text-mute">
               Automation Engineer
@@ -69,7 +69,7 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-3">
             <Link
               href="/ai-link"
-              className="group flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg hover:bg-olive transition-colors duration-300"
+              className="group flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg hover:bg-accent hover:text-white hover:shadow-[0_0_24px_rgba(255,111,166,0.7)] transition-all duration-300"
             >
               <Sparkles className="w-4 h-4" />
               Talk to my AI

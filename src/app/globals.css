@@ -101,6 +101,91 @@ body {
   color: transparent;
 }
 
+/* ---------------- Script + neon ---------------- */
+.script {
+  font-family: var(--font-script), cursive;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.neon {
+  color: #ff5c9a;
+  text-shadow:
+    0 0 1px rgb(255 255 255 / 0.9),
+    0 0 6px rgb(255 111 166 / 0.95),
+    0 0 16px rgb(255 111 166 / 0.8),
+    0 0 36px rgb(255 61 139 / 0.55),
+    0 0 72px rgb(255 61 139 / 0.35);
+}
+/* Turns on like a sign, then breathes. */
+.neon-live {
+  animation:
+    neon-on 1.8s ease-out 0.6s both,
+    neon-breathe 3.6s ease-in-out 2.6s infinite;
+}
+@keyframes neon-on {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  13% { opacity: 0.25; }
+  18% { opacity: 1; }
+  23% { opacity: 0.45; }
+  30%, 100% { opacity: 1; }
+}
+@keyframes neon-breathe {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50% { filter: brightness(1.12) saturate(1.15); }
+}
+
+/* ---------------- Pink aura behind the photo ---------------- */
+.aura {
+  background: radial-gradient(closest-side, rgb(255 111 166 / 0.55), rgb(255 111 166 / 0.22) 55%, transparent 75%);
+  filter: blur(40px);
+  animation: aura-breathe 6s ease-in-out infinite;
+}
+@keyframes aura-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+.aura-edge {
+  filter: drop-shadow(0 0 14px rgb(255 111 166 / 0.55)) drop-shadow(0 0 40px rgb(255 111 166 / 0.35));
+}
+
+/* ---------------- Build cards ---------------- */
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.glow-border {
+  background: conic-gradient(from var(--angle), rgb(212 196 174 / 0.6) 0 55%, #ff6fa6 70%, #ffc2d9 78%, #ff6fa6 86%, rgb(212 196 174 / 0.6) 95%);
+  animation: spin-angle 5s linear infinite;
+}
+@keyframes spin-angle {
+  to { --angle: 360deg; }
+}
+.card-tilt {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  will-change: transform;
+}
+.card-tilt:hover {
+  --lift: -6px;
+  box-shadow: 0 0 0 1px rgb(255 111 166 / 0.6), 0 24px 60px -16px rgb(255 111 166 / 0.6);
+}
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgb(255 111 166 / 0.22), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -109,8 +194,14 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee {
+  .marquee,
+  .neon-live,
+  .aura,
+  .glow-border {
     animation: none;
+  }
+  .card-tilt {
+    transform: none;
   }
   html {
     scroll-behavior: auto;

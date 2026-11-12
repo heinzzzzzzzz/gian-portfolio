@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Syne, Inter, JetBrains_Mono, Instrument_Serif } from 'next/font/google';
+import { Syne, Inter, JetBrains_Mono, Instrument_Serif, Yellowtail } from 'next/font/google';
 import './globals.css';
 import SmoothScroll from '../components/SmoothScroll';
 
@@ -32,6 +32,15 @@ const instrument = Instrument_Serif({
   style: ['normal', 'italic'],
 });
 
+// Script face for the neon signature, the GB logo and the AI callout.
+// Swap here to retune: Kaushan_Script (bolder brush) or Sacramento (thin tube).
+const script = Yellowtail({
+  subsets: ['latin'],
+  variable: '--font-script',
+  display: 'swap',
+  weight: '400',
+});
+
 export const metadata: Metadata = {
   title: 'Gian Benedict Bigay — Automation Engineer',
   description:
@@ -50,7 +59,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${syne.variable} ${inter.variable} ${jetbrains.variable} ${instrument.variable} font-body`}>
+      <body className={`${syne.variable} ${inter.variable} ${jetbrains.variable} ${instrument.variable} ${script.variable} font-body`}>
         <div className="grain"></div>
         <SmoothScroll>
           {children}
