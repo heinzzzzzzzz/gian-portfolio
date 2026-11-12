@@ -149,6 +149,15 @@ body {
   filter: drop-shadow(0 0 14px rgb(255 111 166 / 0.55)) drop-shadow(0 0 40px rgb(255 111 166 / 0.35));
 }
 
+/* Ring that radiates from the call button, staying close to its edge. */
+.pulse-ring {
+  animation: pulse-ring 2.2s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgb(255 111 166 / 0.55); }
+  70%, 100% { box-shadow: 0 0 0 14px rgb(255 111 166 / 0); }
+}
+
 /* ---------------- Build cards ---------------- */
 @property --angle {
   syntax: '<angle>';
@@ -195,6 +204,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .marquee,
+  .pulse-ring,
   .neon-live,
   .aura,
   .glow-border {
