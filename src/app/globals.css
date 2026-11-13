@@ -21,10 +21,12 @@
   --color-cyan: #FFC2D9;
   --color-amber: #D7A83B;
 
-  --font-head: var(--font-syne), sans-serif;
-  --font-body: var(--font-inter), sans-serif;
-  --font-mono: var(--font-jetbrains), monospace;
-  --font-serif: var(--font-instrument), Georgia, serif;
+  /* All four tokens use the same family on purpose: the approved design is a
+     single humanist sans throughout (labels and italics included). */
+  --font-head: var(--font-sans), 'Segoe UI', sans-serif;
+  --font-body: var(--font-sans), 'Segoe UI', sans-serif;
+  --font-mono: var(--font-sans), 'Segoe UI', sans-serif;
+  --font-serif: var(--font-sans), 'Segoe UI', sans-serif;
 }
 
 /* Mocha-dark variant for the AI-link pages. Tailwind v4 utilities read these
@@ -130,16 +132,19 @@ body {
   23% { opacity: 0.45; }
   30%, 100% { opacity: 1; }
 }
+/* Opacity only: animating filter here repainted the glow every frame. */
 @keyframes neon-breathe {
-  0%, 100% { filter: brightness(1) saturate(1); }
-  50% { filter: brightness(1.12) saturate(1.15); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.86; }
 }
 
 /* ---------------- Pink aura behind the photo ---------------- */
+/* The gradient is already soft, so no blur filter (it was re-blurred on every
+   frame of the breathing animation). Transform + opacity stay on the GPU. */
 .aura {
-  background: radial-gradient(closest-side, rgb(255 111 166 / 0.55), rgb(255 111 166 / 0.22) 55%, transparent 75%);
-  filter: blur(40px);
+  background: radial-gradient(closest-side, rgb(255 111 166 / 0.5), rgb(255 111 166 / 0.2) 55%, rgb(255 111 166 / 0.06) 72%, transparent 82%);
   animation: aura-breathe 6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 @keyframes aura-breathe {
   0%, 100% { transform: scale(1); opacity: 0.85; }
@@ -151,11 +156,13 @@ body {
 
 /* Ring that radiates from the call button, staying close to its edge. */
 .pulse-ring {
+  border: 2px solid rgb(255 111 166 / 0.6);
   animation: pulse-ring 2.2s ease-out infinite;
+  will-change: transform, opacity;
 }
 @keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgb(255 111 166 / 0.55); }
-  70%, 100% { box-shadow: 0 0 0 14px rgb(255 111 166 / 0); }
+  0% { transform: scale(1); opacity: 1; }
+  70%, 100% { transform: scale(1.08, 1.35); opacity: 0; }
 }
 
 /* ---------------- Build cards ---------------- */
@@ -164,17 +171,33 @@ body {
   inherits: false;
   initial-value: 0deg;
 }
+/* Spinning pink frame. A rotating pseudo-element (GPU transform) replaces the
+   animated conic-gradient angle, which repainted the whole frame every tick. */
 .glow-border {
-  background: conic-gradient(from var(--angle), rgb(212 196 174 / 0.6) 0 55%, #ff6fa6 70%, #ffc2d9 78%, #ff6fa6 86%, rgb(212 196 174 / 0.6) 95%);
-  animation: spin-angle 5s linear infinite;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: rgb(212 196 174 / 0.6);
 }
-@keyframes spin-angle {
-  to { --angle: 360deg; }
+.glow-border::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 300%;
+  aspect-ratio: 1;
+  z-index: -1;
+  background: conic-gradient(rgb(212 196 174 / 0.6) 0 55%, #ff6fa6 70%, #ffc2d9 78%, #ff6fa6 86%, rgb(212 196 174 / 0.6) 95%);
+  transform: translate(-50%, -50%) rotate(0deg);
+  animation: spin-frame 5s linear infinite;
+  will-change: transform;
+}
+@keyframes spin-frame {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 .card-tilt {
   transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
-  will-change: transform;
 }
 .card-tilt:hover {
   --lift: -6px;
@@ -207,7 +230,7 @@ body {
   .pulse-ring,
   .neon-live,
   .aura,
-  .glow-border {
+  .glow-border::before {
     animation: none;
   }
   .card-tilt {

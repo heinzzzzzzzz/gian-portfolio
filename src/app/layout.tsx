@@ -1,34 +1,16 @@
 import type { Metadata } from 'next';
-import { Syne, Inter, JetBrains_Mono, Instrument_Serif, Yellowtail } from 'next/font/google';
+import { Open_Sans, Yellowtail } from 'next/font/google';
 import './globals.css';
 import SmoothScroll from '../components/SmoothScroll';
 
-const syne = Syne({
+// One sans family for headlines, body and labels. Open Sans is the closest
+// web match to the Segoe UI look the site was designed around, and it loads
+// the same on every device.
+const sans = Open_Sans({
   subsets: ['latin'],
-  variable: '--font-syne',
+  variable: '--font-sans',
   display: 'swap',
   weight: ['400', '500', '600', '700', '800'],
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-});
-
-const jetbrains = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains',
-  display: 'swap',
-  weight: ['400', '500', '600'],
-});
-
-const instrument = Instrument_Serif({
-  subsets: ['latin'],
-  variable: '--font-instrument',
-  display: 'swap',
-  weight: '400',
   style: ['normal', 'italic'],
 });
 
@@ -58,8 +40,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${syne.variable} ${inter.variable} ${jetbrains.variable} ${instrument.variable} ${script.variable} font-body`}>
+    // The font variables live on <html> so the theme tokens in globals.css,
+    // which are defined at the root, can resolve them. (On <body> they could
+    // not, and every font silently fell back to the system font.)
+    <html lang="en" className={`${sans.variable} ${script.variable}`}>
+      <body className="font-body">
         <div className="grain"></div>
         <SmoothScroll>
           {children}

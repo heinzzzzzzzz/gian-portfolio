@@ -55,7 +55,7 @@ export function ScrollStackCard({ index, label, title, number, suffix, desc, bgC
       {/* Abstract background element */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-20 pointer-events-none">
         <motion.div
-          className="aspect-[3/4] w-64 md:w-80 lg:w-[32rem] bg-gradient-to-tr from-black/40 to-white/10 rounded-3xl shadow-2xl backdrop-blur-md border border-white/20"
+          className="aspect-[3/4] w-64 md:w-80 lg:w-[32rem] bg-gradient-to-tr from-black/40 to-white/10 rounded-3xl shadow-2xl border border-white/20"
           initial={{ rotate: 12, scale: 0.9 }}
           whileInView={{ rotate: index % 2 === 0 ? -12 : 12, scale: 1 }}
           transition={{ duration: 1.2, ease: 'easeOut' }}

@@ -14,7 +14,7 @@ export default function Contact() {
         transition={{ duration: 0.7 }}
         className="max-w-6xl mx-auto bg-surface border border-line rounded-3xl p-10 md:p-20 text-center relative overflow-hidden"
       >
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[70%] h-80 bg-accent/15 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[70%] h-80 bg-[radial-gradient(closest-side,rgba(255,111,166,0.22),transparent)] rounded-full pointer-events-none" />
 
         <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent relative z-10">Contact</p>
         <h2 className="headline mt-5 text-4xl md:text-6xl lg:text-7xl font-extrabold text-ink relative z-10 leading-[0.95]">

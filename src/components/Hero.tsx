@@ -1,7 +1,7 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { useState, useSyncExternalStore } from 'react';
+import { motion, useMotionValueEvent, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useGianAgent } from '@/lib/useGianAgent';
 import Portrait from './Portrait';
 import VoiceButton from './VoiceButton';
@@ -30,14 +30,23 @@ export default function Hero() {
   // The hero stays pinned on desktop and dims as the next slide covers it.
   const { scrollY } = useScroll();
   const fade = useTransform(scrollY, [0, 650], [1, 0.1]);
-  const scale = useTransform(scrollY, [0, 650], [1, 0.96]);
+  // Once the next section fully covers the pinned hero, stop painting it so its
+  // glow animations don't keep costing frames for the rest of the page.
+  const [covered, setCovered] = useState(false);
+  useMotionValueEvent(scrollY, 'change', (y) => {
+    const next = y > window.innerHeight * 1.05;
+    setCovered((c) => (c === next ? c : next));
+  });
 
   return (
-    <section className="relative md:sticky md:top-0 z-0 w-full md:h-[100svh] overflow-hidden bg-bg">
+    <section
+      className="relative md:sticky md:top-0 z-0 w-full md:h-[100svh] overflow-hidden bg-bg"
+      style={isDesktop && covered ? { visibility: 'hidden' } : undefined}
+    >
       <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_right,rgba(71,67,41,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(71,67,41,0.06)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(ellipse_75%_65%_at_50%_50%,#000_25%,transparent_100%)]" />
 
       <motion.div
-        style={isDesktop ? { opacity: fade, scale } : undefined}
+        style={isDesktop ? { opacity: fade } : undefined}
         className="relative flex flex-col md:h-full px-5 md:px-10 pt-24 md:pt-24 pb-10 md:pb-6"
       >
         {/* Meta row */}
