@@ -171,7 +171,7 @@ export default function WorksGrid() {
             transition={{ delay: 0.15, duration: 0.6 }}
             className="text-mute max-w-md text-base leading-relaxed"
           >
-            Automations that run every day at Intention Technology, plus the apps and websites I build on my own. Every card opens a case study with real screenshots.
+            Automations that ran daily for client brands, plus the apps and websites I build on my own. Every card opens a case study with real screenshots.
           </motion.p>
         </div>
 

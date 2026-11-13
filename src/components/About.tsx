@@ -7,8 +7,7 @@ import { ArrowUpRight, ArrowDownToLine } from 'lucide-react';
 
 const facts = [
   ['Based in', 'Quezon City, Philippines · GMT+8'],
-  ['Currently', 'Automation Engineer at Intention Technology, part-time, plus freelance'],
-  ['Studying', 'BS Information Technology, Universidad de Manila'],
+  ['Currently', 'Freelance Automation Engineer, open for new projects'],
   ['Principle', 'One engine, any audience: build the machine once, swap the config per client'],
 ];
 
@@ -28,7 +27,7 @@ export default function About() {
             I turn repetitive work into <span className="serif-italic text-accent font-normal">infrastructure.</span>
           </h2>
           <p className="mt-8 text-mute leading-relaxed text-lg">
-            I&apos;m Gian Benedict Bigay, an Automation Engineer who works mostly in n8n. At Intention Technology I designed and ran the content engines, multi-platform distribution and CRM reporting that kept whole brands publishing daily without anyone touching a keyboard.
+            I&apos;m Gian Benedict Bigay, an Automation Engineer who works mostly in n8n. For client brands I designed and ran the content engines, multi-platform distribution and CRM reporting that kept them publishing daily without anyone touching a keyboard.
           </p>
           <p className="mt-4 text-mute leading-relaxed text-lg">
             Outside the pipelines I build the products themselves: an offline-first Flutter finance app, a booking system for my university, and a PHP e-commerce store. Same habits everywhere: shape the data once, fail loudly, make every run safe to repeat.

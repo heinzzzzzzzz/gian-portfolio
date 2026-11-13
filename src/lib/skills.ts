@@ -14,7 +14,7 @@ export const skillGroups: SkillGroup[] = [
     title: 'Automation & AI orchestration',
     blurb:
       'Pipelines that research, write, design, schedule, publish and report with a human approval step only where it matters.',
-    builtWith: 'Eight production systems at Intention Technology',
+    builtWith: 'Eight production systems built for client brands',
     skills: [
       'n8n',
       'Make',
