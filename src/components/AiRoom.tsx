@@ -30,7 +30,7 @@ export default function AiRoom({ initialQuestion, focusChat = false }: { initial
           <Link href="/" className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-mute hover:text-accent transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to site
           </Link>
-          <Link href="/" className="script neon text-[34px] leading-none -rotate-[6deg]" aria-label="Gian Bigay, home">
+          <Link href="/" className="script neon text-[34px] leading-none -rotate-[6deg]" aria-label="Gian Benedict, home">
             GB
           </Link>
         </div>

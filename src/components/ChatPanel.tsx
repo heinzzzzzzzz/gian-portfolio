@@ -64,7 +64,7 @@ export default function ChatPanel({
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className={`font-head font-bold text-[15px] ${onCall ? 'text-white' : 'text-ink'}`}>Gian Bigay</span>
+              <span className={`font-head font-bold text-[15px] ${onCall ? 'text-white' : 'text-ink'}`}>Gian Benedict</span>
               <span
                 className={`rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
                   onCall ? 'bg-white/25 text-white' : 'bg-accent/15 text-accent-deep'

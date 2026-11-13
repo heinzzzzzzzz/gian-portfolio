@@ -45,7 +45,7 @@ export default function Navbar() {
         }`}
       >
         <div className="px-5 md:px-10 py-3 flex items-center justify-between">
-          <Link href="/#top" className="flex items-center gap-3 z-50 relative" aria-label="Gian Bigay, home">
+          <Link href="/#top" className="flex items-center gap-3 z-50 relative" aria-label="Gian Benedict, home">
             <span className="script neon text-[34px] leading-none -rotate-[6deg] pr-1 transition-transform duration-300 hover:-rotate-[2deg] hover:scale-105">
               GB
             </span>

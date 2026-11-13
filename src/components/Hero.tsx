@@ -73,7 +73,7 @@ export default function Hero() {
             <div className="relative text-[19vw] md:text-[min(7vw,13.5vh)] md:mt-[2vh]">
               <h1
                 className="headline font-extrabold uppercase text-olive leading-[0.84] select-none"
-                aria-label="Built once. Runs forever. Gian Bigay."
+                aria-label="Built once. Runs forever. Gian Benedict."
               >
                 {LINES.map((line, i) => (
                   <span key={line} className="block overflow-hidden pb-[0.06em] -mb-[0.06em]">
@@ -90,9 +90,9 @@ export default function Hero() {
               </h1>
               <span
                 aria-hidden
-                className="script neon neon-live absolute z-30 left-[42%] top-[1.02em] text-[0.62em] leading-none whitespace-nowrap -rotate-[8deg] pointer-events-none"
+                className="script neon neon-live absolute z-30 left-[22%] md:left-[42%] top-[1.02em] text-[0.5em] md:text-[0.62em] leading-none whitespace-nowrap -rotate-[8deg] pointer-events-none"
               >
-                Gian Bigay
+                Gian Benedict
               </span>
             </div>
             <motion.div

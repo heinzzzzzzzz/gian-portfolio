@@ -6,8 +6,8 @@ export default function Footer() {
   return (
     <footer className="bg-bg text-ink relative overflow-hidden min-h-[45vh] flex flex-col justify-end pt-24 pb-8 px-5 md:px-10 border-t border-line/60">
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden translate-y-10">
-        <h1 className="headline text-[16vw] leading-none font-extrabold opacity-[0.06] whitespace-nowrap text-ink">
-          GIAN BIGAY
+        <h1 className="headline text-[11.5vw] leading-none font-extrabold opacity-[0.06] whitespace-nowrap text-ink">
+          GIAN BENEDICT
         </h1>
       </div>
 
