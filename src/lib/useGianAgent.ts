@@ -6,10 +6,31 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type Vapi from '@vapi-ai/web';
+import { VOICE_FIRST_MESSAGE, VOICE_PERSONA } from './persona';
 
 // Public (browser-safe) Vapi key and the assistant that speaks as Gian.
 const VAPI_PUBLIC_KEY = 'c4d2d332-b9ae-489d-9b64-ab26902f2af1';
 const VAPI_ASSISTANT_ID = '5de15b62-d5c5-47ae-8712-e1bfe23c44e6';
+
+// Applied on every call, on top of the assistant saved in Vapi. The site owns
+// the prompt (first person, correct spelling of "Gian") and the speech
+// recogniser is told which unusual words to expect, so "Gian" stops coming
+// back as "Gion". The voice itself stays whatever is set in Vapi.
+const VOICE_OVERRIDES = {
+  firstMessage: VOICE_FIRST_MESSAGE,
+  model: {
+    provider: 'openai' as const,
+    model: 'gpt-4.1-mini' as const,
+    temperature: 0.6,
+    messages: [{ role: 'system' as const, content: VOICE_PERSONA }],
+  },
+  transcriber: {
+    provider: 'deepgram' as const,
+    model: 'nova-3',
+    language: 'en' as const,
+    keyterm: ['Gian', 'Gian Benedict', 'Bigay', 'n8n', 'GoHighLevel', 'Octi', 'VapeHub', 'Airtable'],
+  },
+};
 
 export type AgentMsg = { id: string; role: 'user' | 'ai'; content: string; via?: 'voice' };
 export type CallStatus = 'idle' | 'connecting' | 'active' | 'error';
@@ -146,7 +167,7 @@ export function useGianAgent() {
     setCallStatus('connecting');
     try {
       const vapi = await getVapi();
-      await vapi.start(VAPI_ASSISTANT_ID);
+      await vapi.start(VAPI_ASSISTANT_ID, VOICE_OVERRIDES);
     } catch (e) {
       console.error(e);
       setCallError(errorText(e));

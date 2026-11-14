@@ -12,9 +12,9 @@ export default function Portrait({ className = '', priority = false }: { classNa
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_50%_32%,#FFFFFF_0%,#F6EEE4_45%,#E6D6C3_100%)]" />
         {/* pink key-light behind the subject */}
         <div className="absolute left-1/2 top-[30%] -translate-x-1/2 w-[85%] aspect-square rounded-full bg-[radial-gradient(closest-side,rgba(255,111,166,0.38),rgba(255,111,166,0.12)_60%,transparent_80%)]" />
-        {/* floor line + shadow */}
-        <div className="absolute inset-x-0 bottom-0 h-[22%] bg-gradient-to-b from-transparent to-[#DCCAB3]/70" />
-        <div className="absolute left-1/2 bottom-[4%] -translate-x-1/2 w-[80%] h-[7%] rounded-[100%] bg-[radial-gradient(closest-side,rgba(71,67,41,0.28),transparent)]" />
+        {/* studio floor: a soft horizon just above the stool's back feet. The
+            contact shadows under the stool and shoes are baked into the photo. */}
+        <div className="absolute inset-x-0 top-[61%] bottom-0 bg-[linear-gradient(to_bottom,rgba(228,213,194,0)_0%,#E6D6C2_7%,#DCC7AC_55%,#D2BB9C_100%)]" />
         <Image
           src="/portrait.webp"
           alt="Gian Benedict Bigay, studio portrait"
