@@ -28,6 +28,8 @@ export interface Project {
   year: string;
   role: string;
   link?: string;         // live URL when one exists
+  status?: 'live' | 'demo'; // badge on the card
+  frame?: 'browser' | 'none'; // how the cover is presented on the card
   image: string;         // card cover
   gallery: string[];
   galleryLayout?: 'wide' | 'phone';
@@ -84,12 +86,15 @@ export const projects: Project[] = [
     year: '2026',
     role: 'Lead developer, team of four',
     link: 'https://udmbookingsystem.netlify.app/',
+    status: 'live',
+    frame: 'browser',
     image: '/work/udm-availability.jpg',
     gallery: ['/work/udm-login.jpg', '/work/udm-home.jpg', '/work/udm-availability.jpg', '/work/udm-book.jpg', '/work/udm-rooms.jpg'],
     galleryLayout: 'wide',
   },
   {
     id: 'vapehub',
+    frame: 'browser',
     number: '03',
     title: 'VapeHub',
     category: 'website',
@@ -116,8 +121,34 @@ export const projects: Project[] = [
 
   // ---------------------------------------------------------- Automations
   {
-    id: 'demand-automation-network',
+    id: 'ai-voice-receptionist',
     number: '04',
+    title: 'AI Voice Receptionist',
+    category: 'automation',
+    kind: 'Vapi · n8n · Voice AI',
+    tagline: 'A voice agent that answers the phone, checks the calendar and books the appointment.',
+    description:
+      'Built as a working demo for a dental clinic. A Vapi voice agent picks up the call, talks with the caller naturally, and hands the booking to an n8n workflow that checks Google Calendar before it books anything, then confirms the slot out loud. Everything that changes from one client to the next lives in a single CONFIG node, so the same engine can be retuned for a new practice by editing one place.',
+    flow: ['Call', 'Vapi agent', 'Check slot', 'Book', 'Confirm'],
+    outcome: 'Working end to end: it made real bookings during testing.',
+    highlights: [
+      'Check-before-book rule enforced in the agent, so it never double-books',
+      'Parse guard for tool arguments that arrive from Vapi as a JSON string',
+      'Replies to Vapi with HTTP 200 and a single-line result, so answers never get silently dropped',
+      'One CONFIG node is the only thing to edit per client',
+    ],
+    stack: ['Vapi', 'n8n', 'Google Calendar', 'Webhooks'],
+    year: '2026',
+    role: 'Solo design and build',
+    status: 'demo',
+    image: '/work/voice-receptionist.jpg',
+    gallery: ['/work/voice-receptionist.jpg'],
+    galleryLayout: 'wide',
+  },
+
+  {
+    id: 'demand-automation-network',
+    number: '05',
     title: 'Demand Automation Network',
     category: 'automation',
     kind: 'n8n · Content hub',
@@ -134,7 +165,7 @@ export const projects: Project[] = [
   },
   {
     id: 'autonomous-thought-leadership',
-    number: '05',
+    number: '06',
     title: 'Autonomous Thought-Leadership Engine',
     category: 'automation',
     kind: 'n8n · LinkedIn',
@@ -151,7 +182,7 @@ export const projects: Project[] = [
   },
   {
     id: 'self-healing-content',
-    number: '06',
+    number: '07',
     title: 'Self-Healing Content Pipeline',
     category: 'automation',
     kind: 'n8n · Content',
@@ -168,7 +199,7 @@ export const projects: Project[] = [
   },
   {
     id: 'multi-category-editorial',
-    number: '07',
+    number: '08',
     title: 'Multi-Category Editorial Generator',
     category: 'automation',
     kind: 'n8n · SEO blog',
@@ -185,7 +216,7 @@ export const projects: Project[] = [
   },
   {
     id: 'omnichannel-creative',
-    number: '08',
+    number: '09',
     title: 'Omni-Channel Creative Studio',
     category: 'automation',
     kind: 'n8n · Creative',
@@ -202,7 +233,7 @@ export const projects: Project[] = [
   },
   {
     id: 'intelligent-distribution',
-    number: '09',
+    number: '10',
     title: 'Intelligent Distribution Scheduler',
     category: 'automation',
     kind: 'n8n · Scheduler',
@@ -219,7 +250,7 @@ export const projects: Project[] = [
   },
   {
     id: 'automated-newsletter',
-    number: '10',
+    number: '11',
     title: 'Automated Newsletter System',
     category: 'automation',
     kind: 'n8n · Email',
@@ -236,7 +267,7 @@ export const projects: Project[] = [
   },
   {
     id: 'crm-call-intelligence',
-    number: '11',
+    number: '12',
     title: 'CRM Call Intelligence Report',
     category: 'automation',
     kind: 'n8n · Reporting',

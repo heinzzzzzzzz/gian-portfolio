@@ -2,8 +2,9 @@ import { projects, CATEGORY_LABEL } from '@/lib/projects';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ArrowUpRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Check, CalendarDays, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
+import Navbar from '@/components/Navbar';
 
 export function generateStaticParams() {
   return projects.map((p) => ({ id: p.id }));
@@ -29,11 +30,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const phone = project.galleryLayout === 'phone';
 
   return (
-    <main className="min-h-screen bg-bg text-ink selection:bg-accent/30 pt-28 md:pt-32 pb-20 px-5 md:px-10">
+    <>
+    <Navbar />
+    <main id="main" className="min-h-screen bg-bg text-ink selection:bg-accent/30 pt-28 md:pt-32 pb-20 px-5 md:px-10">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/#work"
-          className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-mute hover:text-accent transition-colors mb-10"
+          className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-mute hover:text-accent-ink transition-colors mb-10"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to work
@@ -43,7 +46,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           {/* Details */}
           <div className="lg:sticky lg:top-28 self-start">
             <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-widest">
-              <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-accent">
+              <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-accent-ink">
                 {CATEGORY_LABEL[project.category]}
               </span>
               <span className="text-faint">{project.kind}</span>
@@ -75,7 +78,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 <ul className="space-y-3">
                   {project.highlights.map((h) => (
                     <li key={h} className="flex items-start gap-3 text-sm text-ink">
-                      <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                      <Check className="w-4 h-4 text-accent-ink shrink-0 mt-0.5" />
                       <span>{h}</span>
                     </li>
                   ))}
@@ -89,7 +92,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 {project.flow.map((step, i) => (
                   <div key={step} className="flex items-center gap-2">
                     <span className="px-3 py-1.5 rounded-md bg-surface border border-line text-sm font-medium text-ink">{step}</span>
-                    {i < project.flow.length - 1 && <span className="text-accent font-mono text-xs">→</span>}
+                    {i < project.flow.length - 1 && <span className="text-accent-ink font-mono text-xs">→</span>}
                   </div>
                 ))}
               </div>
@@ -125,7 +128,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             {project.gallery.map((img, i) => (
               <div
                 key={img}
-                className={`relative overflow-hidden border border-line bg-card group ${
+                className={`relative overflow-hidden ring-1 ring-ink/10 bg-card group shadow-[0_24px_60px_-30px_rgba(71,67,41,0.5)] ${
                   phone ? 'rounded-[1.6rem] aspect-[9/20]' : 'rounded-2xl'
                 }`}
               >
@@ -137,6 +140,28 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                     sizes="(max-width: 768px) 50vw, 300px"
                     className="object-cover"
                   />
+                ) : project.frame === 'browser' ? (
+                  <div>
+                    <div className="flex items-center gap-2 border-b border-ink/10 bg-card px-3 py-2">
+                      <span className="flex gap-1.5" aria-hidden>
+                        <i className="h-2.5 w-2.5 rounded-full bg-[#ED6A5E]" />
+                        <i className="h-2.5 w-2.5 rounded-full bg-[#F5BF4F]" />
+                        <i className="h-2.5 w-2.5 rounded-full bg-[#61C554]" />
+                      </span>
+                      <span className="mx-auto truncate rounded-md bg-bg px-3 py-0.5 text-[11px] text-mute">
+                        {project.link ? new URL(project.link).host : 'localhost/vapehub'}
+                      </span>
+                    </div>
+                    <Image
+                      src={img}
+                      alt={`${project.title} screenshot ${i + 1}`}
+                      width={1440}
+                      height={900}
+                      className="w-full h-auto object-cover"
+                      quality={88}
+                      priority={i === 0}
+                    />
+                  </div>
                 ) : (
                   <Image
                     src={img}
@@ -153,15 +178,34 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
+        {/* Book */}
+        <div className="mt-24 relative overflow-hidden rounded-[2rem] bg-ink px-6 py-10 text-bg sm:px-10 md:flex md:items-center md:justify-between md:gap-10">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(255,111,166,0.38),transparent)]" />
+          <div className="relative">
+            <p className="text-[12px] uppercase tracking-[0.28em] text-blush">Want something like this?</p>
+            <h2 className="headline mt-3 text-3xl font-extrabold md:text-4xl">Let&apos;s map out your version.</h2>
+            <p className="mt-2 max-w-[52ch] text-bg/80">A free 20-minute call. You bring the process, I bring a plan.</p>
+          </div>
+          <div className="relative mt-6 flex flex-wrap gap-3 md:mt-0">
+            <Link href="/#book" className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 font-semibold text-on-accent hover:bg-accent-deep transition-colors">
+              <CalendarDays className="h-4 w-4" /> Book a call
+            </Link>
+            <Link href={`/ai-link/chat?q=${encodeURIComponent(`Could you build something like ${project.title} for me?`)}`} className="inline-flex h-12 items-center gap-2 rounded-full px-6 font-semibold text-bg ring-1 ring-bg/30 hover:ring-bg/60 transition-colors">
+              <Sparkles className="h-4 w-4" /> Ask my AI
+            </Link>
+          </div>
+        </div>
+
         {/* Next */}
-        <div className="mt-24 border-t border-line/60 pt-10 flex items-center justify-between">
+        <div className="mt-16 border-t border-ink/10 pt-10 flex items-center justify-between">
           <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-faint">Next build</span>
           <Link href={`/work/${next.id}`} className="group flex items-center gap-3 text-right">
-            <span className="headline font-bold text-xl md:text-3xl text-ink group-hover:text-accent transition-colors">{next.title}</span>
-            <ArrowUpRight className="w-6 h-6 text-faint group-hover:text-accent transition-colors" />
+            <span className="headline font-bold text-xl md:text-3xl text-ink group-hover:text-accent-ink transition-colors">{next.title}</span>
+            <ArrowUpRight className="w-6 h-6 text-faint group-hover:text-accent-ink transition-colors" />
           </Link>
         </div>
       </div>
     </main>
+    </>
   );
 }

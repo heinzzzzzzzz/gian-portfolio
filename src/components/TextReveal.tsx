@@ -10,7 +10,7 @@ function Word({ word, start, end, progress }: { word: string; start: number; end
   const opacity = useTransform(progress, [start, end], [0.12, 1]);
   const isHighlight = highlightWords.includes(word);
   return (
-    <motion.span style={{ opacity }} className={isHighlight ? 'text-accent' : 'text-ink'}>
+    <motion.span style={{ opacity }} className={isHighlight ? 'text-accent-ink' : 'text-ink'}>
       {word}
     </motion.span>
   );

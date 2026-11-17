@@ -10,8 +10,43 @@ import { stackTicker } from '@/lib/skills';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-// Apps and websites are the newest, hand-built work, so they get the glowing frame.
-const isFeatured = (p: Project) => p.category !== 'automation';
+// Hand-built work (apps, websites, the voice demo) gets the glowing frame.
+const isFeatured = (p: Project) => p.category !== 'automation' || p.status === 'demo';
+
+// Hostname shown in the browser frame's address bar.
+const hostFor = (p: Project) => (p.link ? new URL(p.link).host : p.id === 'vapehub' ? 'localhost/vapehub' : `${p.id}.app`);
+
+function Cover({ p, wide }: { p: Project; wide: boolean }) {
+  const sizes = wide ? '(max-width: 640px) 100vw, 66vw' : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
+  if (p.frame === 'browser') {
+    return (
+      <div className="absolute inset-0 bg-[linear-gradient(160deg,#FBDCE7,#E7D9C8)] px-4 pt-12 sm:px-5 sm:pt-14">
+        <div className="relative h-full overflow-hidden rounded-t-xl bg-cardhi shadow-[0_18px_40px_-18px_rgba(71,67,41,0.55)] ring-1 ring-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-1">
+          <div className="flex items-center gap-2 border-b border-ink/10 bg-card px-3 py-2">
+            <span className="flex gap-1.5" aria-hidden>
+              <i className="h-2.5 w-2.5 rounded-full bg-[#ED6A5E]" />
+              <i className="h-2.5 w-2.5 rounded-full bg-[#F5BF4F]" />
+              <i className="h-2.5 w-2.5 rounded-full bg-[#61C554]" />
+            </span>
+            <span className="mx-auto truncate rounded-md bg-bg px-3 py-0.5 text-[11px] text-mute">{hostFor(p)}</span>
+          </div>
+          <div className="relative h-[calc(100%-33px)]">
+            <Image src={p.image} alt={`${p.title} screenshot`} fill sizes={sizes} className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <Image
+      src={p.image}
+      alt={`${p.title} cover`}
+      fill
+      sizes={sizes}
+      className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+    />
+  );
+}
 // Octi gets a double-wide slot in the grid.
 const isWide = (p: Project) => p.id === 'octi';
 
@@ -42,33 +77,32 @@ function BuildCard({ p }: { p: Project }) {
   const inner = (
     <>
       <div className={`relative overflow-hidden bg-card ${wide ? 'aspect-[4/3] sm:aspect-[8/3]' : 'aspect-[4/3]'}`}>
-        <Image
-          src={p.image}
-          alt={p.title}
-          fill
-          sizes={wide ? '(max-width: 640px) 100vw, 66vw' : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'}
-          className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <Cover p={p} wide={wide} />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        <span className="absolute top-3 left-3 rounded-full bg-bg/95 border border-line px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-widest text-ink">
+        <span className="absolute top-3 left-3 z-10 rounded-full bg-bg/95 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-ink ring-1 ring-ink/10">
           {CATEGORY_LABEL[p.category]}
         </span>
-        <div className="absolute top-3 right-3 flex gap-1.5">
-          {featured && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-accent px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-widest text-white shadow-[0_0_18px_rgba(255,111,166,0.8)]">
+        <div className="absolute top-3 right-3 z-10 flex gap-1.5">
+          {featured && p.status !== 'demo' && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-on-accent shadow-[0_0_18px_rgba(255,111,166,0.8)]">
               <Sparkles className="w-3 h-3" /> New
             </span>
           )}
-          {p.link && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-bg">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#7CFF9B] animate-pulse" /> Live
+          {p.status === 'demo' && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-blush px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-accent-ink">
+              Demo
+            </span>
+          )}
+          {p.status === 'live' && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-bg">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#7CFF9B]" /> Live
             </span>
           )}
         </div>
 
         {/* Hover call-to-action */}
-        <span className="absolute left-1/2 bottom-4 -translate-x-1/2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400 ease-out inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-[0_0_30px_rgba(255,111,166,0.9)] whitespace-nowrap">
+        <span className="absolute left-1/2 bottom-4 -translate-x-1/2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-on-accent shadow-[0_0_30px_rgba(255,111,166,0.9)] whitespace-nowrap">
           Open case study <ArrowUpRight className="w-4 h-4" />
         </span>
       </div>
@@ -78,14 +112,14 @@ function BuildCard({ p }: { p: Project }) {
           <span>{p.kind}</span>
           <span>{p.number} · {p.year}</span>
         </div>
-        <h3 className={`mt-3 font-head font-bold text-ink flex items-start justify-between gap-3 group-hover:text-accent-deep transition-colors ${wide ? 'text-2xl md:text-3xl' : 'text-xl'}`}>
+        <h3 className={`mt-3 font-head font-bold text-ink flex items-start justify-between gap-3 group-hover:text-accent-ink transition-colors ${wide ? 'text-2xl md:text-3xl' : 'text-xl'}`}>
           <span>{p.title}</span>
-          <ArrowUpRight className="mt-1 w-5 h-5 shrink-0 text-faint transition-all duration-300 group-hover:text-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <ArrowUpRight className="mt-1 w-5 h-5 shrink-0 text-faint transition-all duration-300 group-hover:text-accent-ink group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </h3>
         <p className="mt-2 text-sm text-mute leading-relaxed">{p.tagline}</p>
         <div className="mt-4 flex flex-wrap gap-1.5">
           {p.stack.slice(0, wide ? 6 : 4).map((s) => (
-            <span key={s} className="rounded-md border border-line bg-bg/60 px-2 py-1 text-[11px] text-mute">
+            <span key={s} className="rounded-md bg-bg/70 px-2 py-1 text-[11px] text-mute ring-1 ring-ink/10">
               {s}
             </span>
           ))}
@@ -140,7 +174,7 @@ export default function WorksGrid() {
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent"
+              className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent-ink"
             >
               Selected work
             </motion.p>
@@ -171,7 +205,7 @@ export default function WorksGrid() {
             transition={{ delay: 0.15, duration: 0.6 }}
             className="text-mute max-w-md text-base leading-relaxed"
           >
-            Automations that ran daily for client brands, plus the apps and websites I build on my own. Every card opens a case study with real screenshots.
+            Automations that ran daily for client brands, plus the apps, websites and voice agents I build myself. Every card opens a case study.
           </motion.p>
         </div>
 
@@ -191,7 +225,7 @@ export default function WorksGrid() {
                 type="button"
                 onClick={() => setFilter(c.id)}
                 className={`relative shrink-0 whitespace-nowrap rounded-full px-3.5 sm:px-4 py-2 text-sm font-medium transition-colors ${
-                  active ? 'text-white' : 'text-mute hover:text-ink'
+                  active ? 'text-on-accent' : 'text-mute hover:text-ink'
                 }`}
               >
                 {active && (
@@ -203,7 +237,7 @@ export default function WorksGrid() {
                 )}
                 <span className="relative z-10 flex items-center gap-2">
                   {c.label}
-                  <span className={`font-mono text-[10px] ${active ? 'text-white/80' : 'text-faint'}`}>
+                  <span className={`font-mono text-[10px] ${active ? 'text-on-accent/80' : 'text-faint'}`}>
                     {String(projectCounts[c.id]).padStart(2, '0')}
                   </span>
                 </span>

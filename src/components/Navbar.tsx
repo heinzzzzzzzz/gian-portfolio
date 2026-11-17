@@ -3,123 +3,171 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X, Sparkles, CalendarDays } from 'lucide-react';
 
 const NAV_LINKS = [
-  { name: 'Work', href: '#work' },
-  { name: 'Skills', href: '#skills' },
-  { name: 'About', href: '#about' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Work', id: 'work' },
+  { name: 'Services', id: 'services' },
+  { name: 'Process', id: 'process' },
+  { name: 'About', id: 'about' },
 ];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState<string | null>(null);
 
   useEffect(() => {
     let last = window.scrollY;
-    const handleScroll = () => {
+    const onScroll = () => {
       const y = window.scrollY;
       setIsScrolled(y > 40);
-      if (y > last && y > 120) {
-        setIsHidden(true);
-        setIsMobileMenuOpen(false);
-      } else {
-        setIsHidden(false);
-      }
+      setIsHidden(y > last && y > 160);
       last = y;
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Highlight the section currently in view (nav-state-active).
+  useEffect(() => {
+    const els = NAV_LINKS.map((l) => document.getElementById(l.id)).filter(Boolean) as HTMLElement[];
+    if (!els.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (hit) setActive(hit.target.id);
+      },
+      { rootMargin: '-40% 0px -50% 0px', threshold: [0, 0.25, 0.5] }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  // Lock page scroll while the mobile menu is open.
+  useEffect(() => {
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    return () => {
+      document.documentElement.style.overflow = '';
+    };
+  }, [open]);
 
   return (
     <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-bg"
+      >
+        Skip to content
+      </a>
       <motion.header
         initial={{ y: -20, opacity: 0 }}
-        animate={{ y: isHidden ? '-100%' : '0%', opacity: 1 }}
-        transition={{ duration: 0.35, ease: 'easeInOut' }}
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-colors duration-300 ${
-          isScrolled ? 'bg-bg/95 border-b border-line/70' : 'bg-transparent border-b border-transparent'
-        }`}
+        animate={{ y: isHidden && !open ? '-110%' : '0%', opacity: 1 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed top-0 inset-x-0 z-50 px-3 md:px-6 pt-3"
       >
-        <div className="px-5 md:px-10 py-3 flex items-center justify-between">
-          <Link href="/#top" className="flex items-center gap-3 z-50 relative" aria-label="Gian Benedict, home">
-            <span className="script neon text-[34px] leading-none -rotate-[6deg] pr-1 transition-transform duration-300 hover:-rotate-[2deg] hover:scale-105">
+        <div
+          className={`mx-auto flex items-center justify-between rounded-full px-3 md:px-4 py-2 transition-all duration-300 ${
+            isScrolled ? 'bg-card/95 shadow-[0_10px_30px_-18px_rgba(71,67,41,0.45)] ring-1 ring-ink/10' : 'bg-transparent'
+          }`}
+        >
+          <Link href="/#top" className="flex items-center gap-3 pl-1" aria-label="Gian Benedict, home">
+            <span className="script neon text-[32px] leading-none -rotate-[6deg] transition-transform duration-300 hover:-rotate-[2deg] hover:scale-105">
               GB
             </span>
-            <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-[0.22em] text-mute">
-              Automation Engineer
-            </span>
+            <span className="hidden sm:inline text-[11px] uppercase tracking-[0.22em] text-mute">Automation Engineer</span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-8">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.name}
-                href={`/${link.href}`}
-                className="font-mono text-[11px] uppercase tracking-[0.22em] text-mute hover:text-ink transition-colors duration-300"
-              >
-                {link.name}
-              </Link>
-            ))}
+          <nav aria-label="Main" className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((l) => {
+              const on = active === l.id;
+              return (
+                <Link
+                  key={l.id}
+                  href={`/#${l.id}`}
+                  aria-current={on ? 'true' : undefined}
+                  className={`relative rounded-full px-4 py-2 text-[12px] uppercase tracking-[0.18em] transition-colors duration-200 ${
+                    on ? 'text-ink' : 'text-mute hover:text-ink'
+                  }`}
+                >
+                  {on && (
+                    <motion.span
+                      layoutId="nav-pill"
+                      className="absolute inset-0 rounded-full bg-blush"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    />
+                  )}
+                  <span className="relative">{l.name}</span>
+                </Link>
+              );
+            })}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2">
             <Link
               href="/ai-link"
-              className="group flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg hover:bg-accent hover:text-white hover:shadow-[0_0_24px_rgba(255,111,166,0.7)] transition-all duration-300"
+              className="flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-ink ring-1 ring-ink/15 hover:ring-accent hover:text-accent-ink transition-colors duration-200"
             >
-              <Sparkles className="w-4 h-4" />
-              Talk to my AI
+              <Sparkles className="w-4 h-4" /> Talk to my AI
+            </Link>
+            <Link
+              href="/#book"
+              className="flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg hover:bg-accent hover:text-on-accent transition-colors duration-200"
+            >
+              <CalendarDays className="w-4 h-4" /> Book a call
             </Link>
           </div>
 
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden z-50 relative p-2 text-ink"
-            aria-label="Toggle mobile menu"
+            type="button"
+            onClick={() => setOpen(!open)}
+            className="lg:hidden flex h-11 w-11 items-center justify-center rounded-full text-ink"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
           >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {open ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </motion.header>
 
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {open && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
             className="fixed inset-0 z-40 bg-bg flex flex-col justify-center px-6 lg:hidden"
           >
-            <nav className="flex flex-col items-center gap-8">
-              {NAV_LINKS.map((link, i) => (
-                <motion.div
-                  key={link.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * i }}
-                >
+            <nav aria-label="Mobile" className="flex flex-col items-center gap-6">
+              {NAV_LINKS.map((l, i) => (
+                <motion.div key={l.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i }}>
                   <Link
-                    href={`/${link.href}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="headline font-bold text-4xl text-ink hover:text-accent transition-colors duration-300"
+                    href={`/#${l.id}`}
+                    onClick={() => setOpen(false)}
+                    className="headline font-extrabold text-4xl text-ink hover:text-accent-ink transition-colors"
                   >
-                    {link.name}
+                    {l.name}
                   </Link>
                 </motion.div>
               ))}
-              <Link
-                href="/ai-link"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-6 flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-base font-semibold text-bg"
-              >
-                <Sparkles className="w-4 h-4" />
-                Talk to my AI
-              </Link>
+              <div className="mt-6 flex w-full max-w-xs flex-col gap-3">
+                <Link
+                  href="/#book"
+                  onClick={() => setOpen(false)}
+                  className="flex h-12 items-center justify-center gap-2 rounded-full bg-ink text-base font-semibold text-bg"
+                >
+                  <CalendarDays className="w-4 h-4" /> Book a 20-min call
+                </Link>
+                <Link
+                  href="/ai-link"
+                  onClick={() => setOpen(false)}
+                  className="flex h-12 items-center justify-center gap-2 rounded-full bg-accent text-base font-semibold text-on-accent"
+                >
+                  <Sparkles className="w-4 h-4" /> Talk to my AI
+                </Link>
+              </div>
             </nav>
           </motion.div>
         )}

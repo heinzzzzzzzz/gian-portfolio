@@ -27,7 +27,7 @@ export default function AiRoom({ initialQuestion, focusChat = false }: { initial
 
       <div className="relative flex flex-col lg:h-full px-5 md:px-10 pt-6 pb-8 lg:pb-6">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-mute hover:text-accent transition-colors">
+          <Link href="/" className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-mute hover:text-accent-ink transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to site
           </Link>
           <Link href="/" className="script neon text-[34px] leading-none -rotate-[6deg]" aria-label="Gian Benedict, home">
@@ -44,7 +44,7 @@ export default function AiRoom({ initialQuestion, focusChat = false }: { initial
             className="min-w-0 grid grid-cols-1 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] lg:grid-cols-1 lg:grid-rows-[auto_1fr_auto] gap-6 lg:min-h-0"
           >
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent">The AI room</p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent-ink">The AI room</p>
               <h1 className="mt-2 script neon neon-live text-[52px] md:text-[64px] leading-[1.05] -rotate-[2deg]">Talk to my AI self</h1>
               <p className="mt-3 text-mute leading-relaxed max-w-[48ch]">
                 It&apos;s trained on my work and answers the way I would. Type below, or tap the pink button and just talk.
@@ -53,7 +53,7 @@ export default function AiRoom({ initialQuestion, focusChat = false }: { initial
               <ul className="mt-4 space-y-2">
                 {KNOWS.map((k) => (
                   <li key={k} className="flex items-start gap-2 text-sm text-ink">
-                    <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" /> {k}
+                    <Check className="w-4 h-4 text-accent-ink shrink-0 mt-0.5" /> {k}
                   </li>
                 ))}
               </ul>

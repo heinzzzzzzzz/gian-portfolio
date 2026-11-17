@@ -15,7 +15,7 @@ export default function Skills() {
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent"
+              className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent-ink"
             >
               Skills
             </motion.p>
@@ -27,7 +27,7 @@ export default function Skills() {
               className="headline mt-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-ink leading-[0.92]"
             >
               What I<br />
-              <span className="serif-italic text-accent font-normal">build with.</span>
+              <span className="serif-italic text-accent-ink font-normal">build with.</span>
             </motion.h2>
           </div>
           <motion.p
@@ -51,7 +51,7 @@ export default function Skills() {
               transition={{ duration: 0.6, delay: 0.05 * i, ease: EASE }}
               className="grid md:grid-cols-12 gap-6 md:gap-8 py-10 md:py-14"
             >
-              <div className="md:col-span-1 font-mono text-xs text-accent">{g.number}</div>
+              <div className="md:col-span-1 font-mono text-xs text-accent-ink">{g.number}</div>
               <div className="md:col-span-4">
                 <h3 className="font-head font-bold text-2xl md:text-3xl text-ink leading-tight">{g.title}</h3>
                 <p className="mt-3 text-sm text-mute leading-relaxed">{g.blurb}</p>
@@ -67,7 +67,7 @@ export default function Skills() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: Math.min(j * 0.03, 0.5) }}
-                    className="rounded-full border border-line bg-surface px-3.5 py-2 text-sm text-ink hover:border-accent hover:text-accent transition-colors cursor-default"
+                    className="rounded-full border border-line bg-surface px-3.5 py-2 text-sm text-ink hover:border-accent hover:text-accent-ink transition-colors cursor-default"
                   >
                     {s}
                   </motion.span>

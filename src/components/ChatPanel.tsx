@@ -55,7 +55,7 @@ export default function ChatPanel({
         {/* Header */}
         <div
           className={`flex items-center gap-3 px-4 py-3 border-b transition-colors duration-300 ${
-            onCall ? 'bg-accent text-white border-accent' : 'bg-cardhi/70 border-line'
+            onCall ? 'bg-accent text-on-accent border-accent' : 'bg-cardhi/70 border-line'
           }`}
         >
           <div className="relative shrink-0">
@@ -64,16 +64,16 @@ export default function ChatPanel({
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className={`font-head font-bold text-[15px] ${onCall ? 'text-white' : 'text-ink'}`}>Gian Benedict</span>
+              <span className={`font-head font-bold text-[15px] ${onCall ? 'text-on-accent' : 'text-ink'}`}>Gian Benedict</span>
               <span
                 className={`rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
-                  onCall ? 'bg-white/25 text-white' : 'bg-accent/15 text-accent-deep'
+                  onCall ? 'bg-on-accent/15 text-on-accent' : 'bg-blush text-accent-ink'
                 }`}
               >
                 AI clone
               </span>
             </div>
-            <div className={`text-[12px] ${onCall ? 'text-white/90' : 'text-mute'}`}>
+            <div className={`text-[12px] ${onCall ? 'text-on-accent' : 'text-mute'}`}>
               {onCall
                 ? `On call · ${fmt(call.seconds)} · ${call.speaking ? 'speaking' : 'listening'}`
                 : connecting
@@ -86,7 +86,7 @@ export default function ChatPanel({
             onClick={call.toggle}
             aria-label={onCall ? 'End call' : 'Call Gian\'s AI'}
             className={`shrink-0 flex items-center gap-2 h-9 rounded-full px-3.5 text-[13px] font-semibold transition-colors ${
-              onCall ? 'bg-white text-accent-deep hover:bg-white/90' : 'bg-accent text-white hover:bg-accent-deep shadow-[0_0_18px_rgba(255,111,166,0.6)]'
+              onCall ? 'bg-on-accent text-accent hover:bg-on-accent/90' : 'bg-accent text-on-accent hover:bg-accent-deep shadow-[0_0_18px_rgba(255,111,166,0.6)]'
             }`}
           >
             {connecting ? <Loader2 className="w-4 h-4 animate-spin" /> : onCall ? <PhoneOff className="w-4 h-4" /> : <Phone className="w-4 h-4" />}
@@ -166,7 +166,7 @@ export default function ChatPanel({
               type="submit"
               disabled={thinking || !text.trim()}
               aria-label="Send"
-              className="shrink-0 h-10 w-10 rounded-full bg-accent text-white flex items-center justify-center hover:bg-accent-deep transition-colors disabled:opacity-40"
+              className="shrink-0 h-10 w-10 rounded-full bg-accent text-on-accent flex items-center justify-center hover:bg-accent-deep transition-colors disabled:opacity-40"
             >
               <Send className="w-4 h-4" />
             </button>

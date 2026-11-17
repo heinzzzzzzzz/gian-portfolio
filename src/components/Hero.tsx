@@ -6,6 +6,7 @@ import { useGianAgent } from '@/lib/useGianAgent';
 import Portrait from './Portrait';
 import VoiceButton from './VoiceButton';
 import ChatPanel from './ChatPanel';
+import { ArrowDown, CalendarDays } from 'lucide-react';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const LINES = ['Built', 'once.', 'Runs', 'forever.'];
@@ -65,7 +66,7 @@ export default function Hero() {
           </p>
           <div className="text-right font-mono text-[10px] md:text-[11px] uppercase tracking-[0.22em] text-mute leading-[2]">
             <div>Quezon City, PH · GMT+8</div>
-            <div className="flex items-center justify-end gap-2 text-accent">
+            <div className="flex items-center justify-end gap-2 text-accent-ink">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-70" />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent" />
@@ -105,18 +106,29 @@ export default function Hero() {
               </span>
             </div>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 0.6 }}
-              className="hidden md:flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-faint"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.6, ease: EASE }}
+              className="mt-8 md:mt-0"
             >
-              Scroll
-              <motion.span
-                animate={reduce ? undefined : { y: [0, 6, 0] }}
-                transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
-                className="inline-block w-px h-6 bg-gradient-to-b from-accent to-transparent"
-              />
-              <span className="ml-3">08 automations · 01 app · 02 websites</span>
+              <p className="max-w-[34ch] text-[15px] md:text-base leading-relaxed text-mute">
+                Production-grade automation, AI agents and voice AI for agencies and publishers.
+              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <a
+                  href="#book"
+                  className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-[15px] font-semibold text-bg hover:bg-accent hover:text-on-accent transition-colors duration-200"
+                >
+                  <CalendarDays className="h-4 w-4" /> Book a 20-min call
+                </a>
+                <a
+                  href="#work"
+                  className="group inline-flex h-12 items-center gap-2 rounded-full px-5 text-[15px] font-semibold text-ink ring-1 ring-ink/20 hover:ring-ink/40 transition-colors duration-200"
+                >
+                  See the work
+                  <ArrowDown className={`h-4 w-4 ${reduce ? '' : 'group-hover:translate-y-0.5'} transition-transform`} />
+                </a>
+              </div>
             </motion.div>
           </div>
 
@@ -144,7 +156,7 @@ export default function Hero() {
               <span className="script neon neon-live text-[38px] md:text-[clamp(30px,3.1vw,46px)] leading-[1.15] -rotate-[3deg] whitespace-nowrap">
                 Talk to my AI self
               </span>
-              <svg aria-hidden viewBox="0 0 80 50" className="w-12 md:w-14 h-auto text-accent mb-[-6px] shrink-0" fill="none">
+              <svg aria-hidden viewBox="0 0 80 50" className="w-12 md:w-14 h-auto text-accent-ink mb-[-6px] shrink-0" fill="none">
                 <path d="M4 8 C 30 2, 58 10, 64 38" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                 <path d="M54 30 L 64 40 L 72 28" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>

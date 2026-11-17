@@ -23,15 +23,30 @@ const script = Yellowtail({
   weight: '400',
 });
 
+const SITE = 'https://gianbportfolio.netlify.app';
+const DESCRIPTION =
+  'Production-grade automation, AI agents and voice AI for agencies and publishers. See the builds, talk to my AI clone, or book a 20-minute call.';
+
 export const metadata: Metadata = {
-  title: 'Gian Benedict Bigay — Automation Engineer',
-  description:
-    'Automation Engineer specializing in n8n. I build content pipelines, CRM systems, apps and websites that run themselves. Talk to my AI clone.',
+  metadataBase: new URL(SITE),
+  title: 'Gian Benedict · Automation Engineer',
+  description: DESCRIPTION,
   openGraph: {
-    title: 'Gian Benedict Bigay — Automation Engineer',
-    description: 'Systems that publish themselves. Automations, apps and websites by Gian Benedict Bigay.',
+    title: 'Gian Benedict · Automation Engineer',
+    description: DESCRIPTION,
+    url: SITE,
+    siteName: 'Gian Benedict',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gian Benedict · Automation Engineer',
+    description: DESCRIPTION,
+  },
+};
+
+export const viewport = {
+  themeColor: '#F0E5D8',
 };
 
 export default function RootLayout({

@@ -12,10 +12,17 @@
   --color-line: #D4C4AE;
   --color-ink: #474329;
   --color-olive: #474329;
-  --color-mute: #6E6850;
-  --color-faint: #9C957A;
+  /* text greys: both pass WCAG AA (4.5:1) on sand and on cards */
+  --color-mute: #5F5943;
+  --color-faint: #6E6850;
+  /* Watermelon is a FILL colour (buttons, glows, pills). It is 2.1:1 on sand,
+     so pink TEXT uses accent-ink (5.2:1) and text on pink fills uses
+     on-accent (6.2:1). */
   --color-accent: #FF6FA6;
   --color-accent-deep: #F0508F;
+  --color-accent-ink: #B0245F;
+  --color-on-accent: #3A1426;
+  --color-blush: #FBDCE7;
   /* teal/cyan are kept as aliases so the AI orb shares the accent */
   --color-teal: #FF6FA6;
   --color-cyan: #FFC2D9;

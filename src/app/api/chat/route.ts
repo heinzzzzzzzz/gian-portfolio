@@ -17,6 +17,53 @@ const MAX_OUTPUT_TOKENS = 400;
 
 type HistoryItem = { role: 'user' | 'ai'; content: string };
 
+// ---------------------------------------------------------------------------
+// Abuse guard. This endpoint spends money on every call, so:
+// 1. Only this site may call it (Origin check).
+// 2. Each visitor IP gets a small budget: 12 messages per 10 minutes and at
+//    most 1 per 2 seconds.
+// The limiter lives in memory, so on serverless it is per warm instance: it
+// stops casual hammering, not a determined attacker. For a hard limit, move it
+// to Upstash/Netlify Blobs, and keep a spend cap on the Gemini key regardless.
+// ---------------------------------------------------------------------------
+const WINDOW_MS = 10 * 60 * 1000;
+const MAX_PER_WINDOW = 12;
+const MIN_GAP_MS = 2000;
+const hits = new Map<string, number[]>();
+
+function clientIp(req: Request): string {
+  const h = req.headers;
+  return (
+    h.get('x-nf-client-connection-ip') ||
+    h.get('x-forwarded-for')?.split(',')[0].trim() ||
+    h.get('x-real-ip') ||
+    'unknown'
+  );
+}
+
+function rateLimited(ip: string): string | null {
+  const now = Date.now();
+  const list = (hits.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+  if (list.length && now - list[list.length - 1] < MIN_GAP_MS) return 'Slow down a little, one message every couple of seconds.';
+  if (list.length >= MAX_PER_WINDOW) return 'You have hit the chat limit for now. Try again in a few minutes, or book a call instead.';
+  list.push(now);
+  hits.set(ip, list);
+  if (hits.size > 5000) hits.clear(); // keep memory bounded
+  return null;
+}
+
+function allowedOrigin(req: Request): boolean {
+  const origin = req.headers.get('origin');
+  if (!origin) return false;
+  try {
+    const host = new URL(origin).host;
+    const self = new URL(req.url).host;
+    return host === self || (host.startsWith('gianbportfolio') && host.endsWith('.netlify.app')) || host.startsWith('localhost:');
+  } catch {
+    return false;
+  }
+}
+
 // Warm-up ping. The chat page calls this on mount so the serverless function
 // is already awake when the first real message is sent.
 export async function GET() {
@@ -24,6 +71,14 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  if (!allowedOrigin(req)) {
+    return Response.json({ error: 'Not allowed.' }, { status: 403 });
+  }
+  const limited = rateLimited(clientIp(req));
+  if (limited) {
+    return Response.json({ error: limited }, { status: 429 });
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return Response.json({ error: 'GEMINI_API_KEY is not configured on the server.' }, { status: 500 });
