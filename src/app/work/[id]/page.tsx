@@ -125,6 +125,19 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
           {/* Gallery */}
           <div className={phone ? 'grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 self-start' : 'flex flex-col gap-6'}>
+            {project.video && (
+              <figure className="overflow-hidden rounded-2xl bg-ink ring-1 ring-ink/10 shadow-[0_24px_60px_-30px_rgba(71,67,41,0.5)]">
+                <video
+                  src={project.video.src}
+                  poster={project.video.poster}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="block aspect-video w-full"
+                />
+                <figcaption className="px-4 py-2.5 font-mono text-[11px] uppercase tracking-widest text-bg/70">Demo with voiceover · captions built in</figcaption>
+              </figure>
+            )}
             {project.gallery.map((img, i) => (
               <div
                 key={img}

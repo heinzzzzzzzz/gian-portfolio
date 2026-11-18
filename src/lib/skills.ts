@@ -59,7 +59,7 @@ export const skillGroups: SkillGroup[] = [
     title: 'Web development',
     blurb:
       'From a browser-only JavaScript app to a PHP and MySQL store to this Next.js site with motion and an AI clone.',
-    builtWith: 'UDM Booking System, VapeHub, this portfolio',
+    builtWith: 'Cackle, UDM Booking System, VapeHub, this portfolio',
     skills: [
       'Next.js',
       'React',

@@ -18,7 +18,7 @@ const hostFor = (p: Project) => (p.link ? new URL(p.link).host : p.id === 'vapeh
 
 function Cover({ p, wide }: { p: Project; wide: boolean }) {
   const sizes = wide ? '(max-width: 640px) 100vw, 66vw' : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
-  if (p.frame === 'browser') {
+  if (p.frame === 'browser' && !p.mockup) {
     return (
       <div className="absolute inset-0 bg-[linear-gradient(160deg,#FBDCE7,#E7D9C8)] px-4 pt-12 sm:px-5 sm:pt-14">
         <div className="relative h-full overflow-hidden rounded-t-xl bg-cardhi shadow-[0_18px_40px_-18px_rgba(71,67,41,0.55)] ring-1 ring-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-1">
@@ -47,8 +47,8 @@ function Cover({ p, wide }: { p: Project; wide: boolean }) {
     />
   );
 }
-// Octi gets a double-wide slot in the grid.
-const isWide = (p: Project) => p.id === 'octi';
+// The lead project gets a double-wide slot in the grid.
+const isWide = (p: Project) => p.id === 'cackle';
 
 function BuildCard({ p }: { p: Project }) {
   const ref = useRef<HTMLAnchorElement>(null);

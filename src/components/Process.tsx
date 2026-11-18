@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { MessageSquareText, Compass, PackageCheck, RefreshCcw } from 'lucide-react';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -31,7 +31,6 @@ const STEPS = [
 
 export default function Process() {
   const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.8', 'end 0.6'] });
   // The connecting line draws itself as you scroll (transform only).
   const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
@@ -55,8 +54,8 @@ export default function Process() {
           {/* track + animated fill, desktop only */}
           <div className="pointer-events-none absolute left-0 right-0 top-6 hidden h-[2px] bg-ink/10 lg:block" />
           <motion.div
-            style={{ scaleX: reduce ? 1 : lineScale }}
-            className="pointer-events-none absolute left-0 right-0 top-6 hidden h-[2px] origin-left bg-accent lg:block"
+            style={{ scaleX: lineScale }}
+            className="motion-reduce:transform-none! pointer-events-none absolute left-0 right-0 top-6 hidden h-[2px] origin-left bg-accent lg:block"
           />
 
           <ol className="grid gap-5 lg:grid-cols-4 lg:gap-6">

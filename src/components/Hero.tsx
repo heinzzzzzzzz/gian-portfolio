@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useSyncExternalStore } from 'react';
-import { motion, useMotionValueEvent, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
 import { useGianAgent } from '@/lib/useGianAgent';
 import Portrait from './Portrait';
 import VoiceButton from './VoiceButton';
@@ -24,7 +24,6 @@ const useIsDesktop = () =>
   useSyncExternalStore(subscribe, () => window.matchMedia(DESKTOP).matches, () => true);
 
 export default function Hero() {
-  const reduce = useReducedMotion();
   const agent = useGianAgent();
   const isDesktop = useIsDesktop();
 
@@ -126,7 +125,7 @@ export default function Hero() {
                   className="group inline-flex h-12 items-center gap-2 rounded-full px-5 text-[15px] font-semibold text-ink ring-1 ring-ink/20 hover:ring-ink/40 transition-colors duration-200"
                 >
                   See the work
-                  <ArrowDown className={`h-4 w-4 ${reduce ? '' : 'group-hover:translate-y-0.5'} transition-transform`} />
+                  <ArrowDown className="h-4 w-4 motion-safe:group-hover:translate-y-0.5 transition-transform" />
                 </a>
               </div>
             </motion.div>

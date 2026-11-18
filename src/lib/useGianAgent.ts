@@ -28,7 +28,7 @@ const VOICE_OVERRIDES = {
     provider: 'deepgram' as const,
     model: 'nova-3',
     language: 'en' as const,
-    keyterm: ['Gian', 'Gian Benedict', 'Bigay', 'n8n', 'GoHighLevel', 'Octi', 'VapeHub', 'Airtable'],
+    keyterm: ['Gian', 'Gian Benedict', 'Bigay', 'n8n', 'GoHighLevel', 'Octi', 'Cackle', 'VapeHub', 'Airtable'],
   },
 };
 
