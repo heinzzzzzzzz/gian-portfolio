@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowUp, ArrowUpRight, ArrowRight } from 'lucide-react';
 
 const SITE_LINKS = [
@@ -32,7 +32,6 @@ const useManilaTime = () =>
 
 export default function Footer() {
   const time = useManilaTime();
-  const reduce = useReducedMotion();
   const year = new Date().getFullYear();
 
   return (
@@ -44,7 +43,7 @@ export default function Footer() {
         <p className="text-[12px] uppercase tracking-[0.28em] text-accent-ink">Before you go</p>
 
         <motion.div
-          initial={reduce ? false : { opacity: 0, y: 40, rotate: -6 }}
+          initial={{ opacity: 0, y: 40, rotate: -6 }}
           whileInView={{ opacity: 1, y: 0, rotate: -2 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}

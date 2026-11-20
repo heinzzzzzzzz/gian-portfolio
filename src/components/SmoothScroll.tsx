@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import { MotionConfig } from 'framer-motion';
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -25,5 +26,8 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     };
   }, []);
 
-  return <>{children}</>;
+  // reducedMotion="user": framer skips transform animations for people who
+  // turn on Reduce Motion, without each component branching on it (which
+  // made the server and client render different markup).
+  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
 }

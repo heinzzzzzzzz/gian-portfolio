@@ -232,6 +232,76 @@ body {
   scrollbar-width: none;
 }
 
+/* ------------------------------------------------------------------
+   Process scenes (.ps): each scene animates when data-on="true".
+   Transform + opacity only, so it stays cheap while pinned.
+   ------------------------------------------------------------------ */
+.ps-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: -3px;
+  background: currentColor;
+  animation: ps-blink 1s steps(1) infinite;
+}
+@keyframes ps-blink {
+  50% { opacity: 0; }
+}
+.ps .ps-pop {
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.4s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ps[data-on='true'] .ps-pop {
+  opacity: 1;
+  transform: none;
+  transition-delay: 2.6s;
+}
+.ps .ps-draw {
+  fill: none;
+  stroke: #474329;
+  stroke-width: 2;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  transition: stroke-dashoffset 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.3s;
+}
+.ps[data-on='true'] .ps-draw { stroke-dashoffset: 0; }
+.ps .ps-node,
+.ps .ps-line {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ps .ps-line { transform: translateX(-12px); }
+.ps[data-on='true'] .ps-node,
+.ps[data-on='true'] .ps-line {
+  opacity: 1;
+  transform: none;
+}
+.ps .ps-hand {
+  opacity: 0;
+  transition: opacity 0.6s 1.9s;
+}
+.ps[data-on='true'] .ps-hand { opacity: 1; }
+.ps .ps-box {
+  box-shadow: inset 0 0 0 1.5px rgb(71 67 41 / 0.35);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+.ps[data-on='true'] .ps-box {
+  background: #ff6fa6;
+  box-shadow: none;
+}
+.ps .ps-tick {
+  fill: none;
+  stroke: #3a1426;
+  stroke-width: 3;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transition: stroke-dashoffset 0.35s;
+}
+.ps[data-on='true'] .ps-tick { stroke-dashoffset: 0; }
+
 @media (prefers-reduced-motion: reduce) {
   .marquee,
   .pulse-ring,
@@ -245,5 +315,10 @@ body {
   }
   html {
     scroll-behavior: auto;
+  }
+  .ps *,
+  .ps-caret {
+    transition: none !important;
+    animation: none !important;
   }
 }

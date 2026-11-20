@@ -1,158 +1,233 @@
 'use client';
 
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { ArrowUpRight, Megaphone, BarChart3, PhoneCall, AppWindow, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 import { projects } from '@/lib/projects';
+import { RevealLine } from './RevealLine';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 type Service = {
   id: string;
-  icon: typeof Megaphone;
   title: string;
   line: string;
-  stack: string[];
-  proof: string[]; // project ids that prove it
-  ask: string; // question pre-filled for the AI clone
-  span: string; // bento placement
-  dark?: boolean;
+  tools: string;
+  proof: string[]; // project ids that prove it (every build sits in exactly one service)
+  image: string; // what the cursor preview shows
 };
 
 const SERVICES: Service[] = [
   {
     id: 'content',
-    icon: Megaphone,
     title: 'Content engines',
-    line: 'One source feed in. A blog post, native posts for five social platforms and branded images out, approved and scheduled without anyone copy-pasting.',
-    stack: ['n8n', 'OpenRouter', 'WordPress', 'Airtable', 'Bannerbear'],
-    proof: ['demand-automation-network', 'multi-category-editorial', 'self-healing-content'],
-    ask: 'How would you automate my content from one source feed?',
-    span: 'lg:col-span-4',
-    dark: true,
+    line: 'One source feed in. A blog post, native posts for each platform and branded images out, approved before anything goes live.',
+    tools: 'n8n · OpenRouter · WordPress · Airtable · Bannerbear',
+    proof: ['demand-automation-network', 'self-healing-content', 'multi-category-editorial', 'autonomous-thought-leadership', 'omnichannel-creative', 'automated-newsletter'],
+    image: '/out-care-social.jpg',
   },
   {
     id: 'voice',
-    icon: PhoneCall,
-    title: 'AI voice agents',
-    line: 'Receptionists that pick up, check the calendar and book, then log it.',
-    stack: ['Vapi', 'n8n', 'Google Calendar'],
+    title: 'Voice agents',
+    line: 'A receptionist that answers the phone, checks the calendar, books the slot and logs the call.',
+    tools: 'Vapi · n8n · Google Calendar',
     proof: ['ai-voice-receptionist'],
-    ask: 'Can you build an AI receptionist for my business?',
-    span: 'lg:col-span-2',
+    image: '/work/voice-receptionist.jpg',
   },
   {
     id: 'crm',
-    icon: BarChart3,
-    title: 'CRM & reporting',
-    line: 'GoHighLevel pipelines, call analytics and approval boards that land in a sheet before anyone opens a laptop.',
-    stack: ['GoHighLevel', 'n8n', 'Google Sheets'],
+    title: 'CRM & reports',
+    line: 'GoHighLevel pipelines and call reports that land in a sheet before anyone opens a laptop.',
+    tools: 'GoHighLevel · n8n · Google Sheets',
     proof: ['crm-call-intelligence', 'intelligent-distribution'],
-    ask: 'What can you automate in GoHighLevel for my agency?',
-    span: 'lg:col-span-2',
+    image: '/work/cover-crm-call-intelligence.jpg',
   },
   {
     id: 'apps',
-    icon: AppWindow,
-    title: 'Apps & websites',
-    line: 'When the tool you need does not exist yet: a time-tracking SaaS, an offline-first Flutter app, a booking system, an e-commerce store, this site.',
-    stack: ['Flutter', 'Next.js', 'PHP', 'MySQL'],
+    title: 'Apps & sites',
+    line: 'When the tool you need does not exist yet. A time-tracking SaaS, an offline-first finance app, a booking system, a store.',
+    tools: 'Next.js · Supabase · Flutter · PHP · MySQL',
     proof: ['cackle', 'octi', 'udm-booking-system', 'vapehub'],
-    ask: 'Can you build a custom app or website for my team?',
-    span: 'lg:col-span-4',
+    image: '/work/cackle-wide.jpg',
   },
 ];
 
 const byId = Object.fromEntries(projects.map((p) => [p.id, p]));
+const SHOWN = 3; // proof links listed per row; the rest live in the Work grid
+
+const FINE_POINTER = '(hover: hover) and (pointer: fine)';
+const subscribePointer = (cb: () => void) => {
+  const mq = window.matchMedia(FINE_POINTER);
+  mq.addEventListener('change', cb);
+  return () => mq.removeEventListener('change', cb);
+};
+const useFinePointer = () =>
+  useSyncExternalStore(subscribePointer, () => window.matchMedia(FINE_POINTER).matches, () => false);
+
+/**
+ * A preview card that follows the cursor with a little lag and leans into the
+ * direction you move. The rAF loop only runs while a row is hovered, so it
+ * costs nothing while you scroll.
+ */
+function useCursorPreview(enabled: boolean) {
+  const card = useRef<HTMLDivElement>(null);
+  const target = useRef({ x: 0, y: 0 });
+  const pos = useRef<{ x: number; y: number } | null>(null);
+  const [active, setActive] = useState<number | null>(null);
+  const showing = active !== null;
+
+  useEffect(() => {
+    if (!enabled) return;
+    const move = (e: PointerEvent) => {
+      target.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener('pointermove', move, { passive: true });
+    return () => window.removeEventListener('pointermove', move);
+  }, [enabled]);
+
+  useEffect(() => {
+    if (!enabled || !showing) return;
+    pos.current = pos.current ?? { ...target.current };
+    let raf = 0;
+    const tick = () => {
+      const p = pos.current!;
+      const t = target.current;
+      const dx = (t.x - p.x) * 0.14;
+      p.x += dx;
+      p.y += (t.y - p.y) * 0.14;
+      const lean = Math.max(-12, Math.min(12, dx * 0.6)) - 3;
+      if (card.current) card.current.style.transform = `translate3d(${p.x - 190}px, ${p.y - 135}px, 0) rotate(${lean}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [enabled, showing]);
+
+  return { card, active, setActive };
+}
 
 export function ServicesSection() {
+  const reduce = useReducedMotion();
+  const fine = useFinePointer();
+  const preview = fine && !reduce;
+  const { card, active, setActive } = useCursorPreview(preview);
+
   return (
-    <section id="services" className="scroll-mt-24 bg-bg px-5 py-20 md:px-10 md:py-28 border-t border-ink/10">
+    <section id="services" className="scroll-mt-24 bg-bg px-5 py-24 md:px-10 md:py-36">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-[12px] uppercase tracking-[0.28em] text-accent-ink">Services</p>
-            <motion.h2
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.6, ease: EASE }}
-              className="headline mt-4 text-5xl font-extrabold leading-[0.92] text-ink sm:text-6xl md:text-7xl"
-            >
-              What I <span className="serif-italic font-normal text-accent-ink">build.</span>
-            </motion.h2>
-          </div>
-          <p className="max-w-md text-base leading-relaxed text-mute">
-            Four kinds of work, each backed by builds you can open. Tap &ldquo;Ask my AI&rdquo; on any of them to get a straight answer about your case.
+          <h2 className="headline text-[clamp(44px,7vw,104px)] font-extrabold leading-[0.9] tracking-[-0.045em] text-ink">
+            <RevealLine>Four things</RevealLine>
+            <RevealLine delay={0.08}>I get hired for.</RevealLine>
+          </h2>
+          <p className="max-w-[34ch] text-[15px] leading-relaxed text-mute">
+            Each one has shipped builds behind it.{fine ? ' Hover a row to see one.' : ''}
           </p>
         </div>
 
-        <div className="mt-12 grid gap-4 md:gap-5 lg:grid-cols-6">
+        <ul className="mt-14 border-t-[1.5px] border-ink/20 md:mt-20" onPointerLeave={() => setActive(null)}>
           {SERVICES.map((s, i) => {
-            const Icon = s.icon;
-            const dark = !!s.dark;
+            const first = byId[s.proof[0]];
+            const extra = s.proof.length - SHOWN;
             return (
-              <motion.article
+              <motion.li
                 key={s.id}
-                initial={{ opacity: 0, y: 28 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.55, delay: i * 0.06, ease: EASE }}
-                className={`${s.span} group relative flex flex-col overflow-hidden rounded-[1.75rem] p-6 md:p-8 ring-1 transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_rgba(255,111,166,0.75)] ${
-                  dark ? 'bg-ink text-bg ring-ink' : 'bg-card text-ink ring-ink/10'
-                }`}
+                transition={{ duration: 0.8, delay: i * 0.08, ease: EASE }}
+                onPointerEnter={() => preview && setActive(i)}
+                className="group relative isolate border-b-[1.5px] border-ink/20"
               >
-                {dark && (
-                  <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(255,111,166,0.38),transparent)]" />
-                )}
-                <div className="relative flex items-start justify-between gap-4">
-                  <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${dark ? 'bg-accent text-on-accent' : 'bg-blush text-accent-ink'}`}>
-                    <Icon className="h-6 w-6" strokeWidth={2} />
-                  </span>
-                  <span className={`text-[12px] font-semibold tabular-nums ${dark ? 'text-bg/70' : 'text-faint'}`}>0{i + 1}</span>
-                </div>
-
-                <h3 className="headline relative mt-6 text-2xl font-extrabold md:text-3xl">{s.title}</h3>
-                <p className={`relative mt-3 max-w-[52ch] text-[15px] leading-relaxed ${dark ? 'text-bg/85' : 'text-mute'}`}>{s.line}</p>
-
-                <ul className="relative mt-5 flex flex-wrap gap-1.5" aria-label="Tools">
-                  {s.stack.map((t) => (
-                    <li
-                      key={t}
-                      className={`rounded-full px-3 py-1 text-[12px] ${dark ? 'bg-bg/10 text-bg/90 ring-1 ring-bg/15' : 'bg-bg text-mute ring-1 ring-ink/10'}`}
-                    >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="relative mt-auto pt-7">
-                  <p className={`text-[11px] uppercase tracking-[0.2em] ${dark ? 'text-bg/70' : 'text-faint'}`}>See it in</p>
-                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5">
-                    {s.proof.map((id) => (
-                      <Link
-                        key={id}
-                        href={`/work/${id}`}
-                        className={`inline-flex items-center gap-1 text-sm font-semibold underline-offset-4 hover:underline ${dark ? 'text-blush' : 'text-accent-ink'}`}
-                      >
-                        {byId[id]?.title ?? id} <ArrowUpRight className="h-3.5 w-3.5" />
-                      </Link>
-                    ))}
+                {/* mocha fill that wipes up from the bottom on hover / keyboard focus */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 -z-10 bg-ink [clip-path:inset(100%_0_0_0)] transition-[clip-path] duration-300 ease-out group-hover:[clip-path:inset(0)] group-focus-within:[clip-path:inset(0)] motion-reduce:transition-none"
+                />
+                <div className="grid gap-5 py-8 md:grid-cols-[1fr_minmax(0,380px)_56px] md:items-center md:gap-8 md:px-6 md:py-9">
+                  <div>
+                    <p className="text-[13px] font-bold text-accent-ink transition-colors group-hover:text-accent group-focus-within:text-accent">
+                      {s.proof.length} {s.proof.length === 1 ? 'build' : 'builds'} shipped
+                    </p>
+                    <h3 className="headline mt-2 text-[clamp(38px,5.6vw,84px)] font-extrabold leading-[0.95] tracking-[-0.045em] text-ink transition-[color,translate] duration-300 ease-out group-hover:translate-x-3 group-hover:text-bg group-focus-within:text-bg md:group-hover:translate-x-7 motion-reduce:transition-none">
+                      {s.title}
+                    </h3>
                   </div>
+
+                  <div>
+                    {/* touch screens (and reduced motion) get the screenshot inline instead of the cursor card */}
+                    <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-xl ring-1 ring-ink/10 [@media(hover:hover)_and_(pointer:fine)_and_(prefers-reduced-motion:no-preference)]:hidden">
+                      <Image src={s.image} alt={`${first?.title ?? s.title} screenshot`} fill sizes="(max-width: 768px) 100vw, 380px" className="object-cover object-top" />
+                    </div>
+                    <p className="text-base leading-relaxed text-mute transition-colors group-hover:text-bg/85 group-focus-within:text-bg/85">{s.line}</p>
+                    <p className="mt-2 text-[13px] text-faint transition-colors group-hover:text-bg/75 group-focus-within:text-bg/75">{s.tools}</p>
+                    <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold">
+                      {s.proof.slice(0, SHOWN).map((id) => (
+                        <Link
+                          key={id}
+                          href={`/work/${id}`}
+                          className="inline-flex min-h-8 items-center text-accent-ink underline decoration-accent/60 decoration-2 underline-offset-4 transition-colors hover:decoration-accent group-hover:text-blush group-focus-within:text-blush"
+                        >
+                          {byId[id]?.title ?? id}
+                        </Link>
+                      ))}
+                      {extra > 0 && (
+                        <Link href="/#work" className="inline-flex min-h-8 items-center text-faint transition-colors hover:underline group-hover:text-bg/75 group-focus-within:text-bg/75">
+                          +{extra} more
+                        </Link>
+                      )}
+                    </p>
+                  </div>
+
                   <Link
-                    href={`/ai-link/chat?q=${encodeURIComponent(s.ask)}`}
-                    className={`mt-5 inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors duration-200 ${
-                      dark ? 'bg-accent text-on-accent hover:bg-accent-deep' : 'bg-ink text-bg hover:bg-accent hover:text-on-accent'
-                    }`}
+                    href={`/work/${s.proof[0]}`}
+                    aria-label={`Open ${first?.title ?? s.title}`}
+                    className="hidden h-14 w-14 place-items-center rounded-full ring-[1.5px] ring-ink/30 transition-[rotate,background-color] duration-300 ease-out group-hover:-rotate-45 group-hover:bg-accent group-hover:ring-accent group-focus-within:bg-accent group-focus-within:ring-accent md:grid motion-reduce:transition-none"
                   >
-                    <Sparkles className="h-4 w-4" /> Ask my AI about this
+                    <ArrowRight className="h-5 w-5 text-ink group-hover:text-on-accent group-focus-within:text-on-accent" />
                   </Link>
                 </div>
-              </motion.article>
+              </motion.li>
             );
           })}
+        </ul>
+
+        <div className="mt-10 flex flex-col gap-3 text-base text-mute sm:flex-row sm:items-center sm:justify-between">
+          <span>Not sure which one your problem is?</span>
+          <Link
+            href={`/ai-link/chat?q=${encodeURIComponent('Here is a process I want to automate: ')}`}
+            className="self-start border-b-2 border-accent pb-0.5 font-bold text-accent-ink transition-colors hover:text-ink sm:self-auto"
+          >
+            Describe it to my AI self
+          </Link>
         </div>
       </div>
+
+      {/* cursor preview (mouse devices only) */}
+      {preview && (
+        <div ref={card} aria-hidden className="pointer-events-none fixed left-0 top-0 z-50 h-[270px] w-[380px]">
+          <div
+            className={`relative h-full w-full overflow-hidden rounded-[14px] shadow-[0_40px_80px_-30px_rgba(58,20,38,0.55),0_0_0_6px_#FBF7F1] transition-[opacity,scale] duration-300 ${
+              active === null ? 'scale-75 opacity-0' : 'scale-100 opacity-100'
+            }`}
+          >
+            {SERVICES.map((s, i) => (
+              <Image
+                key={s.id}
+                src={s.image}
+                alt=""
+                fill
+                sizes="380px"
+                className={`object-cover object-top transition-[opacity,scale] duration-700 ease-[cubic-bezier(.16,1,.3,1)] ${
+                  active === i ? 'scale-100 opacity-100' : 'scale-110 opacity-0'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
