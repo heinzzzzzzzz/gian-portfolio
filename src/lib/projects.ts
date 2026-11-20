@@ -50,7 +50,7 @@ export const projects: Project[] = [
       'Cackle is a multi-tenant time-tracking SaaS for small teams and agencies. People start a timer in one click, drag blocks on a weekly calendar to fill gaps, or just say what they worked on and let voice entry turn it into time entries. At the end of the week they submit a timesheet, a manager approves it or sends it back with a note, and approved time locks so nobody edits it after the fact. Projects carry budgets that warn at 80%, and reports can be shared with a client as a live link or exported. You can sign up solo, create a team workspace and invite people, or join a team through your company email domain. The rules that matter (who can see what, what locks after approval) are enforced in the database, not just the UI.',
     flow: ['Track', 'Calendar', 'Submit week', 'Approve', 'Report'],
     outcome:
-      'A working SaaS live on the web, with Stripe billing wired in for paid plans, built on the lessons of a time tracker I first made for a single client.',
+      'A working SaaS live on the web and free to use while it grows, built on the lessons of a time tracker I first made for a single client.',
     highlights: [
       'Voice entry: say what you did, get time entries back',
       'Weekly approvals that lock approved time',
@@ -58,7 +58,7 @@ export const projects: Project[] = [
       'Shareable client reports, plus team, KPI and cost views',
       'Database rules covered by tests that run against an in-memory Postgres',
     ],
-    stack: ['Next.js', 'React', 'TypeScript', 'Supabase', 'Postgres', 'Tailwind CSS', 'Stripe', 'Vercel'],
+    stack: ['Next.js', 'React', 'TypeScript', 'Supabase', 'Postgres', 'Tailwind CSS', 'Vercel'],
     year: '2026',
     role: 'Solo design and build',
     link: 'https://cackle-sand.vercel.app',
