@@ -1,6 +1,6 @@
 import { projects, CATEGORY_LABEL } from '@/lib/projects';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
+import ThemedImage from '@/components/ThemedImage';
 import Link from 'next/link';
 import { ArrowLeft, ArrowUpRight, Check, CalendarDays, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -146,7 +146,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 }`}
               >
                 {phone ? (
-                  <Image
+                  <ThemedImage
                     src={img}
                     alt={`${project.title} screen ${i + 1}`}
                     fill
@@ -165,7 +165,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                         {project.link ? new URL(project.link).host : 'localhost/vapehub'}
                       </span>
                     </div>
-                    <Image
+                    <ThemedImage
                       src={img}
                       alt={`${project.title} screenshot ${i + 1}`}
                       width={1440}
@@ -176,7 +176,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                     />
                   </div>
                 ) : (
-                  <Image
+                  <ThemedImage
                     src={img}
                     alt={`${project.title} screenshot ${i + 1}`}
                     width={1440}

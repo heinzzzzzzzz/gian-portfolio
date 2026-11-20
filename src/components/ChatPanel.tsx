@@ -58,11 +58,11 @@ export default function ChatPanel({
             onCall ? 'bg-accent text-on-accent border-accent' : 'bg-cardhi/70 border-line'
           }`}
         >
-          <div className="relative shrink-0">
+          <div data-dim style={{ ['--dim-delay' as string]: '0.35s' }} className="relative shrink-0">
             <Image src="/avatar.jpg" alt="Gian" width={40} height={40} className="h-10 w-10 rounded-full object-cover ring-2 ring-accent/60" />
             <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-[#34C76F] ring-2 ring-card" />
           </div>
-          <div className="min-w-0 flex-1">
+          <div data-dim style={{ ['--dim-delay' as string]: '0.35s' }} className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className={`font-head font-bold text-[15px] ${onCall ? 'text-on-accent' : 'text-ink'}`}>Gian Benedict</span>
               <span
@@ -95,7 +95,7 @@ export default function ChatPanel({
         </div>
 
         {/* Thread */}
-        <div ref={scrollRef} data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-3 bg-[radial-gradient(ellipse_at_top,rgba(255,111,166,0.06),transparent_60%)]">
+        <div ref={scrollRef} data-dim style={{ ['--dim-delay' as string]: '0.45s' }} data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-3 bg-[radial-gradient(ellipse_at_top,rgba(255,111,166,0.06),transparent_60%)]">
           <AnimatePresence initial={false}>
             {messages.map((m) => (
               <motion.div
@@ -139,8 +139,9 @@ export default function ChatPanel({
         </div>
 
         {/* Suggestions + input */}
-        <div className="border-t border-line bg-cardhi/60 px-3 pt-3 pb-3">
-          <div data-lenis-prevent className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+        <div data-dim style={{ ['--dim-delay' as string]: '0.5s' }} className="border-t border-line bg-cardhi/60 px-3 pt-3 pb-3">
+          {/* Wrapped, not a hidden sideways scroller, so every suggestion is visible. */}
+          <div className="flex flex-wrap gap-2 pb-2">
             {CHIPS.map((c) => (
               <button
                 key={c}

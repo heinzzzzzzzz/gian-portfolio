@@ -334,3 +334,4 @@ export const projectCounts: Record<Category | 'all', number> = {
   app: projects.filter((p) => p.category === 'app').length,
   website: projects.filter((p) => p.category === 'website').length,
 };
+

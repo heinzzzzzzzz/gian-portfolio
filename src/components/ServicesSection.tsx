@@ -1,9 +1,11 @@
 'use client';
 
+import { useReduce } from '@/lib/motion';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { createPortal } from 'react-dom';
+import ThemedImage from '@/components/ThemedImage';
+import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { projects } from '@/lib/projects';
 import { RevealLine } from './RevealLine';
@@ -111,7 +113,7 @@ function useCursorPreview(enabled: boolean, still: boolean) {
 }
 
 export function ServicesSection() {
-  const reduce = useReducedMotion();
+  const reduce = useReduce();
   const fine = useFinePointer();
   // Mouse = hover preview, always. Touch = the screenshot sits in the row.
   const preview = fine;
@@ -162,7 +164,7 @@ export function ServicesSection() {
                   <div>
                     {/* touch screens get the screenshot inline; a mouse gets the cursor card instead */}
                     <div className="relative mb-5 hidden aspect-[16/10] overflow-hidden rounded-xl ring-1 ring-ink/10 [@media(hover:none)]:block">
-                      <Image src={s.image} alt={`${first?.title ?? s.title} screenshot`} fill sizes="(max-width: 768px) 100vw, 380px" className="object-cover object-top" />
+                      <ThemedImage src={s.image} alt={`${first?.title ?? s.title} screenshot`} fill sizes="(max-width: 768px) 100vw, 380px" className="object-cover object-top" />
                     </div>
                     <p className="text-base leading-relaxed text-mute transition-colors group-hover:text-bg/85 group-focus-within:text-bg/85">{s.line}</p>
                     <p className="mt-2 text-[13px] text-faint transition-colors group-hover:text-bg/75 group-focus-within:text-bg/75">{s.tools}</p>
@@ -208,8 +210,11 @@ export function ServicesSection() {
         </div>
       </div>
 
-      {/* cursor preview (mouse devices only) */}
-      {preview && (
+      {/* cursor preview (mouse devices only). Portalled to <body>: the page's
+          scroll effects put a transform on this section, and position: fixed
+          inside a transform follows the section instead of the screen. */}
+      {preview &&
+        createPortal(
         <div ref={card} aria-hidden className="pointer-events-none fixed left-0 top-0 z-50 h-[270px] w-[380px]">
           <div
             className={`relative h-full w-full overflow-hidden rounded-[14px] shadow-[0_40px_80px_-30px_rgba(58,20,38,0.55),0_0_0_6px_#FBF7F1] transition-[opacity,scale] duration-300 motion-reduce:transition-opacity ${
@@ -217,7 +222,7 @@ export function ServicesSection() {
             }`}
           >
             {SERVICES.map((s, i) => (
-              <Image
+              <ThemedImage
                 key={s.id}
                 src={s.image}
                 alt=""
@@ -229,8 +234,9 @@ export function ServicesSection() {
               />
             ))}
           </div>
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
     </section>
   );
 }

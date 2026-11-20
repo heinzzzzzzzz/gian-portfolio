@@ -8,6 +8,8 @@ import Skills from '@/components/Skills';
 import About from '@/components/About';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
+import Scene from '@/components/Scene';
+import StickerToss from '@/components/StickerToss';
 
 export default function Home() {
   return (
@@ -15,16 +17,19 @@ export default function Home() {
       <Navbar />
       <div id="main" />
       <Hero />
-      {/* Everything below slides over the pinned hero like the next slide in a deck */}
-      <div className="relative z-10 bg-bg">
-        <WorksGrid />
-        <TextReveal />
-        <ServicesSection />
-        <Process />
-        <Skills />
-        <About />
-        <Contact />
-        <Footer />
+      {/* The page plays like a film: full-bleed shots, no frames. Each section's
+          content rises in from a slight zoom, then pushes back and fades as the
+          next shot slides up over it. */}
+      <div data-dim style={{ ['--dim-delay' as string]: '0.4s' }} className="relative z-10">
+        <StickerToss />
+        <Scene><WorksGrid /></Scene>
+        <Scene><TextReveal /></Scene>
+        <Scene><ServicesSection /></Scene>
+        <Scene className="bg-surface"><Process /></Scene>
+        <Scene><Skills /></Scene>
+        <Scene><About /></Scene>
+        <Scene><Contact /></Scene>
+        <Scene><Footer /></Scene>
       </div>
     </main>
   );

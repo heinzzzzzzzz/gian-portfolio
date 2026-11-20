@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sparkles, CalendarDays } from 'lucide-react';
+import LampToggle from './LampToggle';
 
 const NAV_LINKS = [
   { name: 'Work', id: 'work' },
@@ -76,10 +77,10 @@ export default function Navbar() {
             <span className="script neon text-[32px] leading-none -rotate-[6deg] transition-transform duration-300 hover:-rotate-[2deg] hover:scale-105">
               GB
             </span>
-            <span className="hidden sm:inline text-[11px] uppercase tracking-[0.22em] text-mute">Automation Engineer</span>
+            <span data-dim className="hidden sm:inline text-[11px] uppercase tracking-[0.22em] text-mute">Automation Engineer</span>
           </Link>
 
-          <nav aria-label="Main" className="hidden lg:flex items-center gap-1">
+          <nav data-dim aria-label="Main" className="hidden lg:flex items-center gap-1">
             {NAV_LINKS.map((l) => {
               const on = active === l.id;
               return (
@@ -105,13 +106,16 @@ export default function Navbar() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-2">
+            <LampToggle className="mr-1" />
             <Link
+              data-dim
               href="/ai-link"
               className="flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-ink ring-1 ring-ink/15 hover:ring-accent hover:text-accent-ink transition-colors duration-200"
             >
               <Sparkles className="w-4 h-4" /> Talk to my AI
             </Link>
             <Link
+              data-dim
               href="/#book"
               className="flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg hover:bg-accent hover:text-on-accent transition-colors duration-200"
             >
@@ -119,6 +123,8 @@ export default function Navbar() {
             </Link>
           </div>
 
+          <div className="lg:hidden flex items-center gap-1">
+          <LampToggle />
           <button
             type="button"
             onClick={() => setOpen(!open)}
@@ -128,6 +134,7 @@ export default function Navbar() {
           >
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
+          </div>
         </div>
       </motion.header>
 

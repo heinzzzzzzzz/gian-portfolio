@@ -127,6 +127,7 @@ body {
 }
 /* Turns on like a sign, then breathes. */
 .neon-live {
+  will-change: opacity;
   animation:
     neon-on 1.8s ease-out 0.6s both,
     neon-breathe 3.6s ease-in-out 2.6s infinite;
@@ -139,6 +140,23 @@ body {
   23% { opacity: 0.45; }
   30%, 100% { opacity: 1; }
 }
+/* Loader sign: same flicker, sooner and quicker. */
+.neon-boot {
+  animation: neon-on 1.1s ease-out 0.15s both;
+}
+/* Loader entrance: start from 0.97 + transparent, never from 0. */
+.boot-in {
+  animation: boot-in 0.5s ease-out both;
+}
+@keyframes boot-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+/* Repeat visits in the same session: the loader never paints. */
+.intro-seen .preloader {
+  display: none;
+}
+
 /* Opacity only: animating filter here repainted the glow every frame. */
 @keyframes neon-breathe {
   0%, 100% { opacity: 1; }
@@ -303,22 +321,156 @@ body {
 .ps[data-on='true'] .ps-tick { stroke-dashoffset: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee,
-  .pulse-ring,
-  .neon-live,
-  .aura,
-  .glow-border::before {
+  html:not(.motion-full) .marquee,
+  html:not(.motion-full) .pulse-ring,
+  html:not(.motion-full) .neon-live,
+  html:not(.motion-full) .neon-boot,
+  html:not(.motion-full) .boot-in,
+  html:not(.motion-full) .aura,
+  html:not(.motion-full) .glow-border::before {
     animation: none;
   }
-  .card-tilt {
+  html:not(.motion-full) .card-tilt {
     transform: none;
   }
-  html {
+  html:not(.motion-full) {
     scroll-behavior: auto;
   }
-  .ps *,
-  .ps-caret {
+  html:not(.motion-full) .ps *,
+  html:not(.motion-full) .ps-caret {
     transition: none !important;
     animation: none !important;
   }
 }
+
+/* ==================================================================
+   NIGHT MODE: "Barbie after dark"
+   Light mode is the cute sand + watermelon studio. Night is the same girl
+   going out: deep berry-plum walls, blush-white type, hot-pink neon and a
+   touch of champagne. Smooth and glossy: no grain, no texture.
+   Toggled by the lamp in the nav; html.night is set before first paint.
+   ================================================================== */
+html.night {
+  --color-bg: #1c0b19;
+  --color-surface: #25101f;
+  --color-card: #2d1428;
+  --color-cardhi: #3a1a34;
+  --color-line: #52284a;
+  --color-ink: #ffeaf4;
+  --color-olive: #2d1428;
+  --color-mute: #e8bcd2;
+  --color-faint: #c095ab;
+  --color-accent: #ff5fa8;
+  --color-accent-deep: #ff3d96;
+  --color-accent-ink: #ff9cc8;
+  --color-on-accent: #2a0718;
+  --color-blush: #4a1838;
+  --color-cyan: #ffd6a5;
+  color-scheme: dark;
+}
+html.night .grain { display: none; }
+html.night ::selection { background-color: rgb(255 95 168 / 0.45); color: #fff; }
+html.night ::-webkit-scrollbar-track { background: #25101f; }
+html.night ::-webkit-scrollbar-thumb { background: #6b2f5c; }
+html.night .outline-text { -webkit-text-stroke-color: var(--color-ink); }
+
+/* Theme-only pieces */
+.night-only { display: none !important; }
+html.night .night-only { display: block !important; }
+html.night .day-only { display: none !important; }
+
+/* Hardcoded light surfaces become plum gloss */
+html.night .bg-white,
+html.night .bg-\[\#FBF7F1\],
+html.night .bg-\[\#FDE7EE\],
+html.night .bg-\[\#EEF4E8\] { background-color: var(--color-cardhi); }
+html.night .ring-\[\#FBF7F1\] { --tw-ring-color: var(--color-cardhi); }
+html.night .glow-border { background: rgb(82 40 74 / 0.8); }
+html.night .glow-border::before {
+  background: conic-gradient(rgb(82 40 74 / 0.8) 0 52%, #ff5fa8 66%, #ffd6a5 74%, #ff5fa8 84%, rgb(82 40 74 / 0.8) 95%);
+}
+html.night .ps .ps-draw { stroke: #ffeaf4; }
+html.night .ps .ps-box { box-shadow: inset 0 0 0 1.5px rgb(255 234 244 / 0.35); }
+html.night .wall-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 95 168 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 95 168 / 0.06) 1px, transparent 1px) !important;
+}
+/* The sticker board (Skills) and other mocha panels */
+html.night .sticker-board { background: linear-gradient(160deg, #3a1a34, #25101f) !important; }
+html.night .bg-\[\#342F1B\] { background-color: var(--color-bg); }
+
+/* Neon glows a little hotter after dark */
+html.night .neon {
+  color: #ff79b8;
+  text-shadow:
+    0 0 1px rgb(255 255 255 / 0.95),
+    0 0 8px rgb(255 95 168 / 1),
+    0 0 22px rgb(255 95 168 / 0.8),
+    0 0 48px rgb(255 61 150 / 0.55),
+    0 0 96px rgb(255 61 150 / 0.35);
+}
+
+/* Portrait at night: plum booth, and a pink key light on the photo so it
+   sits in the scene instead of looking pasted in from daytime. */
+html.night .pp-backdrop { background: radial-gradient(ellipse 70% 55% at 50% 30%, #5a2150 0%, #3a1534 45%, #1c0b19 100%) !important; }
+html.night .pp-floor { background: linear-gradient(to bottom, rgb(28 11 25 / 0) 0%, #2a1026 8%, #220c1f 60%, #1c0b19 100%) !important; }
+html.night .pp-night { filter: drop-shadow(0 0 1.5px rgb(255 95 168 / 0.7)) drop-shadow(0 24px 28px rgb(10 2 8 / 0.55)); }
+.pp-spot { left: 12%; right: 12%; bottom: 2%; height: 16%; border-radius: 50%; background: radial-gradient(closest-side, rgb(255 95 168 / 0.38), rgb(255 95 168 / 0.1) 60%, transparent); }
+
+/* Sparkles + soft bokeh behind the hero at night (transform/opacity only) */
+.twinkle { animation: twinkle 3.2s ease-in-out infinite; }
+@keyframes twinkle { 0%, 100% { opacity: 0.15; transform: scale(0.6); } 50% { opacity: 1; transform: scale(1); } }
+.drift { animation: drift 14s ease-in-out infinite alternate; will-change: transform; }
+@keyframes drift { to { transform: translate3d(4%, -6%, 0) scale(1.08); } }
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.motion-full) :is(.twinkle, .drift) { animation: none; }
+}
+
+
+/* ---- Theme curtain (see src/lib/theme.ts) ----
+   A velvet stage curtain drops from the top when the lamp is clicked, the
+   theme swaps behind it, then it parts from the centre and gathers to the
+   sides, revealing the new look. The curtain wears the colour of the mode
+   you are going to: plum velvet for night, blush velvet for day. */
+.curtain { position: fixed; inset: 0; z-index: 300; pointer-events: none; will-change: transform; }
+.curtain-half {
+  position: absolute; top: 0; bottom: 0; width: 50.5%;
+  will-change: transform;
+  /* stage light on the velvet, top/bottom shade, then two fold rhythms
+     (68px and 157px) laid over each other so the folds look uneven */
+  background:
+    radial-gradient(ellipse 60% 45% at var(--c-spot, 100%) 30%, rgb(255 255 255 / 0.14), transparent 70%),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.3), transparent 18%, transparent 70%, rgb(0 0 0 / 0.38)),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.22) 0, transparent 40px, rgb(255 255 255 / 0.08) 70px, transparent 105px, rgb(0 0 0 / 0.22) 157px),
+    repeating-linear-gradient(90deg, var(--c-deep) 0, var(--c-mid) 20px, var(--c-light) 33px, var(--c-mid) 47px, var(--c-deep) 68px);
+  box-shadow: inset 0 0 80px rgb(0 0 0 / 0.35);
+}
+.curtain-half.l { left: 0; transform-origin: 0 50%; --c-spot: 100%; }
+.curtain-half.r { right: 0; transform-origin: 100% 50%; --c-spot: 0%; }
+/* scalloped hem with a trim line and fringe */
+.curtain-half::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -14px; height: 22px;
+  background:
+    radial-gradient(circle at 17px -4px, var(--c-trim) 0 9px, transparent 10px) 0 0 / 34px 22px repeat-x;
+  filter: drop-shadow(0 0 6px var(--c-glow));
+}
+.curtain-half::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 6px; height: 3px;
+  background: var(--c-trim); box-shadow: 0 0 10px var(--c-glow);
+}
+.curtain-valance {
+  position: absolute; left: 0; right: 0; top: 0; height: 64px; z-index: 1;
+  background:
+    linear-gradient(to bottom, var(--c-deep), var(--c-mid)),
+    var(--c-mid);
+  -webkit-mask: radial-gradient(circle at 40px 100%, transparent 0 22px, #000 23px) 0 0 / 80px 100% repeat-x;
+          mask: radial-gradient(circle at 40px 100%, transparent 0 22px, #000 23px) 0 0 / 80px 100% repeat-x;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.35);
+}
+.curtain-valance::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 18px; height: 2px; background: var(--c-trim); box-shadow: 0 0 8px var(--c-glow);
+}
+.curtain--night { --c-deep: #22071e; --c-mid: #4a1240; --c-light: #8a2a73; --c-trim: #ff5fa8; --c-glow: rgb(255 95 168 / 0.8); }
+.curtain--day { --c-deep: #e5779f; --c-mid: #f59bbf; --c-light: #ffd0e2; --c-trim: #ffe2b0; --c-glow: rgb(255 214 165 / 0.9); }

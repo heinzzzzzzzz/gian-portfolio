@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Open_Sans, Yellowtail } from 'next/font/google';
 import './globals.css';
 import SmoothScroll from '../components/SmoothScroll';
+import Preloader from '../components/Preloader';
+import Script from 'next/script';
 
 // One sans family for headlines, body and labels. Open Sans is the closest
 // web match to the Segoe UI look the site was designed around, and it loads
@@ -58,9 +60,20 @@ export default function RootLayout({
     // The font variables live on <html> so the theme tokens in globals.css,
     // which are defined at the root, can resolve them. (On <body> they could
     // not, and every font silently fell back to the system font.)
-    <html lang="en" className={`${sans.variable} ${script.variable}`}>
+    <html lang="en" className={`${sans.variable} ${script.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Before first paint: skip the loader on repeat visits and for Reduce Motion. */}
+        <Script id="intro-gate" strategy="beforeInteractive">
+          {"try{if(sessionStorage.getItem('gb-intro')==='1'||(matchMedia('(prefers-reduced-motion: reduce)').matches&&localStorage.getItem('gb-motion')!=='full'))document.documentElement.classList.add('intro-seen');if(localStorage.getItem('gb-motion')==='full')document.documentElement.classList.add('motion-full')}catch(e){}"}
+        </Script>
+        {/* Before first paint: restore the visitor's lights-on / lights-off choice. */}
+        <Script id="theme-gate" strategy="beforeInteractive">
+          {"try{if(localStorage.getItem('gb-theme')==='night')document.documentElement.classList.add('night')}catch(e){}"}
+        </Script>
+      </head>
       <body className="font-body">
         <div className="grain"></div>
+        <Preloader />
         <SmoothScroll>
           {children}
         </SmoothScroll>

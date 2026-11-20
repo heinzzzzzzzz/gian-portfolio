@@ -1,14 +1,17 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import { motion, useMotionValue, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { useReduce } from '@/lib/motion';
+import { useRouter } from 'next/navigation';
+import { curtainNavigate } from '@/lib/theme';
+import { DoorFrame, DoorLeaf, DOORWAY, HINGE_X, PHASE, type DoorLook } from './StoryDoor';
+import ThemedImage from '@/components/ThemedImage';
 import Link from 'next/link';
 import { ArrowUpRight, Sparkles } from 'lucide-react';
-import { projects, CATEGORIES, CATEGORY_LABEL, projectCounts, Category, Project } from '@/lib/projects';
-import { stackTicker } from '@/lib/skills';
+import { CATEGORY_LABEL, projectCounts, Project } from '@/lib/projects';
+import { DOORS } from '@/lib/doors';
 
-const EASE = [0.16, 1, 0.3, 1] as const;
 
 // Hand-built work (apps, websites, the voice demo) gets the glowing frame.
 const isFeatured = (p: Project) => p.category !== 'automation' || p.status === 'demo';
@@ -31,14 +34,14 @@ function Cover({ p, wide }: { p: Project; wide: boolean }) {
             <span className="mx-auto truncate rounded-md bg-bg px-3 py-0.5 text-[11px] text-mute">{hostFor(p)}</span>
           </div>
           <div className="relative h-[calc(100%-33px)]">
-            <Image src={p.image} alt={`${p.title} screenshot`} fill sizes={sizes} className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]" />
+            <ThemedImage src={p.image} alt={`${p.title} screenshot`} fill sizes={sizes} className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]" />
           </div>
         </div>
       </div>
     );
   }
   return (
-    <Image
+    <ThemedImage
       src={p.image}
       alt={`${p.title} cover`}
       fill
@@ -50,10 +53,10 @@ function Cover({ p, wide }: { p: Project; wide: boolean }) {
 // The lead project gets a double-wide slot in the grid.
 const isWide = (p: Project) => p.id === 'cackle';
 
-function BuildCard({ p }: { p: Project }) {
+export function BuildCard({ p, plain = false }: { p: Project; plain?: boolean }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const featured = isFeatured(p);
-  const wide = isWide(p);
+  const wide = !plain && isWide(p);
 
   // Cursor spotlight + gentle 3D tilt, driven by CSS variables.
   const onMove = (e: React.MouseEvent) => {
@@ -146,125 +149,111 @@ function BuildCard({ p }: { p: Project }) {
 }
 
 export default function WorksGrid() {
-  const [filter, setFilter] = useState<Category | 'all'>('all');
-  const visible = projects.filter((p) => filter === 'all' || p.category === filter);
+  const pin = useRef<HTMLDivElement>(null);
+  const reduce = useReduce();
+  const done = useMotionValue(1);
+  // 0 when the section pins, 1 when it lets go. The doors build one after another.
+  const { scrollYProgress } = useScroll({ target: pin, offset: ['start start', 'end end'] });
+  const build = reduce ? done : scrollYProgress;
 
   return (
-    <section id="work" className="relative bg-bg">
-      {/* Ticker band: the leading edge of the slide that covers the hero */}
-      <div className="bg-olive text-bg overflow-hidden">
-        <div
-          className="marquee flex w-max items-center py-3 font-mono text-[11px] font-medium uppercase tracking-[0.25em]"
-          style={{ '--marquee-duration': '45s' } as React.CSSProperties}
-        >
-          {[...stackTicker, ...stackTicker].map((s, i) => (
-            <span key={i} className="flex items-center">
-              <span className="px-6">{s}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+    <section id="work" ref={pin} className="relative h-[340vh] bg-bg">
+      <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden px-5 pt-24 pb-6 md:px-10 md:pt-24">
+        {/* Header */}
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div className="relative">
+            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent-ink">Selected work</p>
+            <h2 className="headline mt-2 text-[clamp(36px,5vw,72px)] font-extrabold text-ink leading-[0.95]">
+              Builds, by <span className="outline-text">category.</span>
+            </h2>
+            <span className="script neon absolute right-0 -bottom-7 sm:-right-24 text-[clamp(26px,2.6vw,40px)] whitespace-nowrap pointer-events-none -rotate-6">
+              pick a door
             </span>
+          </div>
+          <p className="text-mute max-w-md text-[15px] leading-relaxed">
+            Automations that ran daily for client brands, plus the apps and websites I build myself. Pick a door to walk through those builds.
+          </p>
+        </div>
+
+        {/* Three doors, built by your scroll, one per category. Each opens its own page. */}
+        <div className="mx-auto mt-6 grid min-h-0 w-full max-w-6xl flex-1 grid-cols-3 items-end gap-3 sm:gap-6 md:gap-10">
+          {DOORS.map((d, i) => (
+            <Door key={d.slug} d={d} build={build} i={i} />
           ))}
         </div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-5 md:px-10 py-20 md:py-28">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
-          <div className="relative">
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent-ink"
-            >
-              Selected work
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.7, ease: EASE }}
-              className="headline mt-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-ink leading-[0.92]"
-            >
-              Builds, by<br />
-              <span className="outline-text">category.</span>
-            </motion.h2>
-            <motion.span
-              initial={{ opacity: 0, rotate: -12, scale: 0.9 }}
-              whileInView={{ opacity: 1, rotate: -8, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4, duration: 0.7, ease: EASE }}
-              className="script neon absolute right-0 sm:-right-28 bottom-2 text-4xl md:text-5xl whitespace-nowrap pointer-events-none"
-            >
-              pick one
-            </motion.span>
-          </div>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15, duration: 0.6 }}
-            className="text-mute max-w-md text-base leading-relaxed"
-          >
-            Automations that ran daily for client brands, plus the apps, websites and voice agents I build myself. Every card opens a case study.
-          </motion.p>
-        </div>
-
-        {/* Filter tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="mt-12 inline-flex max-w-full overflow-x-auto no-scrollbar gap-1 rounded-full border border-line bg-card/70 p-1"
-        >
-          {CATEGORIES.map((c) => {
-            const active = filter === c.id;
-            return (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => setFilter(c.id)}
-                className={`relative shrink-0 whitespace-nowrap rounded-full px-3.5 sm:px-4 py-2 text-sm font-medium transition-colors ${
-                  active ? 'text-on-accent' : 'text-mute hover:text-ink'
-                }`}
-              >
-                {active && (
-                  <motion.span
-                    layoutId="work-filter-pill"
-                    className="absolute inset-0 rounded-full bg-accent shadow-[0_0_20px_rgba(255,111,166,0.7)]"
-                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-2">
-                  {c.label}
-                  <span className={`font-mono text-[10px] ${active ? 'text-on-accent/80' : 'text-faint'}`}>
-                    {String(projectCounts[c.id]).padStart(2, '0')}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </motion.div>
-
-        {/* Grid */}
-        <motion.div layout className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7">
-          <AnimatePresence mode="popLayout">
-            {visible.map((p, i) => (
-              <motion.article
-                layout
-                key={p.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.4), ease: EASE }}
-                className={isWide(p) ? 'sm:col-span-2' : ''}
-              >
-                <BuildCard p={p} />
-              </motion.article>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </div>
     </section>
+  );
+}
+
+const LOOKS: Record<string, DoorLook> = {
+  automations: { stone: '#B9A8F5', stoneHi: '#DCD3FF', leaf: '#FF8FC8', leafShade: '#C2457F', detail: 'gear' },
+  apps: { stone: '#FFC6A3', stoneHi: '#FFE3D2', leaf: '#8FDDB8', leafShade: '#2F8A63', detail: 'porthole' },
+  websites: { stone: '#F7A8C8', stoneHi: '#FFD6E6', leaf: '#FFD978', leafShade: '#B88A1A', detail: 'heart' },
+};
+
+// A storybook door with a sign. Hover cracks it open (a pink glow and the first
+// warm light shows through); click swings it wide while a curtain falls and
+// "teleports" you into that category's room.
+function Door({ d, i, build }: { d: (typeof DOORS)[number]; i: number; build: MotionValue<number> }) {
+  const router = useRouter();
+  const [opening, setOpening] = useState(false);
+  const href = `/builds/${d.slug}`;
+  const look = LOOKS[d.slug];
+  // this door's slice of the pinned scroll: door 1, then 2, then 3
+  const t = useTransform(build, [i * 0.28, i * 0.28 + 0.34], [0, 1], { clamp: true });
+  const ready = useTransform(t, (v) => (v >= 0.999 ? 'auto' : 'none'));
+  // the sign drops in on its strings and swings to rest
+  const sign = useTransform(t, [PHASE.sign[0], PHASE.sign[1]], [0, 1], { clamp: true });
+  const signY = useTransform(sign, [0, 0.6, 1], ['-260%', '8%', '0%']);
+  const signR = useTransform(sign, [0, 0.6, 0.8, 1], [-14, 6, -4, -2]);
+  const signO = useTransform(sign, [0, 0.1], [0, 1]);
+  const label = useTransform(t, [0.95, 1], [0, 1]);
+  const room = useTransform(t, [0.37, 0.42], [0, 1]);
+
+  const go = (e: React.MouseEvent) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey) return; // let new-tab clicks through
+    e.preventDefault();
+    setOpening(true);
+    curtainNavigate(() => router.push(href));
+  };
+
+  return (
+    <motion.div style={{ pointerEvents: ready }} className="flex h-full min-h-0 flex-col justify-end">
+      <Link href={href} onClick={go} aria-label={`Door ${d.n}: ${d.label}, ${projectCounts[d.cat]} builds`} className="group block">
+        <div className="relative mx-auto aspect-[300/470] w-full max-w-[min(280px,calc((100svh-330px)*0.64))] [container-type:inline-size] [perspective:1400px] transition-transform duration-300 group-hover:-translate-y-1">
+          <DoorFrame look={look} t={t} />
+          {/* a warm light switching on behind the door, no preview */}
+          <motion.div className="absolute overflow-hidden rounded-t-full" style={{ ...DOORWAY, opacity: room }}>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_70%,#FFF3C4_0%,#FFC2DA_35%,rgb(255_111_166/0.55)_60%,#2a0f22_100%)]" />
+          </motion.div>
+          {/* the leaf swings on its hinge */}
+          <div
+            className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.34,1.4,0.64,1)] motion-safe:group-hover:[transform:rotateY(-26deg)]"
+            style={{
+              transformOrigin: `${HINGE_X} 50%`,
+              ...(opening ? { transform: 'rotateY(-110deg)', transitionDuration: '700ms', transitionTimingFunction: 'cubic-bezier(0.6,0,0.2,1)' } : {}),
+            }}
+          >
+            <DoorLeaf look={look} t={t} />
+            {/* hanging sign */}
+            <motion.div style={{ x: '-50%', y: signY, rotate: signR, opacity: signO }} className="absolute left-1/2 top-[56%] w-[62%] origin-top">
+              <div className="mx-auto flex w-[46%] justify-between px-[8%]" aria-hidden>
+                <span className="h-5 w-[3px] -rotate-12 bg-[#2E2350]" />
+                <span className="h-5 w-[3px] rotate-12 bg-[#2E2350]" />
+              </div>
+              <div className="rounded-[5cqw] border-[3px] border-[#2E2350] bg-[#FFF8EE] px-[3cqw] py-[3cqw] text-center shadow-[0_5px_0_-1px_#2E2350]">
+                <div className="text-[4cqw] font-bold uppercase tracking-[0.2em] text-[#B0245F]">Door {d.n}</div>
+                <div className="headline mt-0.5 text-[8.5cqw] font-extrabold leading-none text-[#2E2350]">{d.label}</div>
+                <div className="mt-1 text-[4.2cqw] font-semibold text-[#5F5943]">{String(projectCounts[d.cat]).padStart(2, '0')} builds</div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+        <motion.div style={{ opacity: label }} className="mt-3 text-center text-sm font-semibold text-mute transition-colors group-hover:text-accent-ink">
+          Walk in <span aria-hidden>→</span>
+        </motion.div>
+      </Link>
+    </motion.div>
   );
 }

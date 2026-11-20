@@ -79,7 +79,7 @@ export default function Skills() {
             initial="hidden"
             whileInView="shown"
             viewport={{ once: true, amount: 0.35 }}
-            className="@container relative aspect-[4/5] rounded-[28px] bg-[linear-gradient(160deg,#5A5536,#3F3B23)] shadow-[0_50px_90px_-40px_rgba(58,52,30,0.8),inset_0_2px_0_rgba(255,255,255,0.08)] sm:aspect-[16/10]"
+            className="sticker-board @container relative aspect-[4/5] rounded-[28px] bg-[linear-gradient(160deg,#5A5536,#3F3B23)] shadow-[0_50px_90px_-40px_rgba(58,52,30,0.8),inset_0_2px_0_rgba(255,255,255,0.08)] sm:aspect-[16/10]"
           >
             {/* the logo dimple in the middle of the lid */}
             <span aria-hidden className="absolute left-1/2 top-1/2 h-[7cqw] w-[7cqw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-bg/10" />

@@ -1,7 +1,8 @@
 'use client';
 
+import { useReduce } from '@/lib/motion';
 import { useEffect, useRef, useState } from 'react';
-import { motion, useInView, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { motion, useInView, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion';
 
 /*
  * "How a project actually goes", told with the real artifacts of Gian's loop:
@@ -160,7 +161,7 @@ function BriefScene({ on }: SceneProps) {
 }
 
 function Typed({ text }: { text: string }) {
-  const reduce = useReducedMotion();
+  const reduce = useReduce();
   const [n, setN] = useState(0);
   useEffect(() => {
     if (reduce) return;
