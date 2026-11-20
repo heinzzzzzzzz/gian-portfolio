@@ -10,7 +10,9 @@ import { motion } from 'framer-motion';
 export function RevealLine({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   return (
     <motion.span
-      className="block overflow-hidden pb-[0.08em]"
+      // the mask has to clear descenders (g, p, y) at the tight 0.9 leading;
+      // the negative margin gives back most of the extra so lines stay close
+      className="-mb-[0.08em] block overflow-hidden pb-[0.22em]"
       initial="hidden"
       whileInView="shown"
       viewport={{ once: true, margin: '-60px' }}
