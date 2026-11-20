@@ -69,9 +69,10 @@ const useFinePointer = () =>
 /**
  * A preview card that follows the cursor with a little lag and leans into the
  * direction you move. The rAF loop only runs while a row is hovered, so it
- * costs nothing while you scroll.
+ * costs nothing while you scroll. With Reduce Motion on, the card still shows
+ * but sits on the cursor with no lag or lean.
  */
-function useCursorPreview(enabled: boolean) {
+function useCursorPreview(enabled: boolean, still: boolean) {
   const card = useRef<HTMLDivElement>(null);
   const target = useRef({ x: 0, y: 0 });
   const pos = useRef<{ x: number; y: number } | null>(null);
@@ -94,16 +95,17 @@ function useCursorPreview(enabled: boolean) {
     const tick = () => {
       const p = pos.current!;
       const t = target.current;
-      const dx = (t.x - p.x) * 0.14;
+      const k = still ? 1 : 0.14;
+      const dx = (t.x - p.x) * k;
       p.x += dx;
-      p.y += (t.y - p.y) * 0.14;
-      const lean = Math.max(-12, Math.min(12, dx * 0.6)) - 3;
+      p.y += (t.y - p.y) * k;
+      const lean = still ? 0 : Math.max(-12, Math.min(12, dx * 0.6)) - 3;
       if (card.current) card.current.style.transform = `translate3d(${p.x - 190}px, ${p.y - 135}px, 0) rotate(${lean}deg)`;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [enabled, showing]);
+  }, [enabled, showing, still]);
 
   return { card, active, setActive };
 }
@@ -111,8 +113,9 @@ function useCursorPreview(enabled: boolean) {
 export function ServicesSection() {
   const reduce = useReducedMotion();
   const fine = useFinePointer();
-  const preview = fine && !reduce;
-  const { card, active, setActive } = useCursorPreview(preview);
+  // Mouse = hover preview, always. Touch = the screenshot sits in the row.
+  const preview = fine;
+  const { card, active, setActive } = useCursorPreview(preview, !!reduce);
 
   return (
     <section id="services" className="scroll-mt-24 bg-bg px-5 py-24 md:px-10 md:py-36">
@@ -157,8 +160,8 @@ export function ServicesSection() {
                   </div>
 
                   <div>
-                    {/* touch screens (and reduced motion) get the screenshot inline instead of the cursor card */}
-                    <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-xl ring-1 ring-ink/10 [@media(hover:hover)_and_(pointer:fine)_and_(prefers-reduced-motion:no-preference)]:hidden">
+                    {/* touch screens get the screenshot inline; a mouse gets the cursor card instead */}
+                    <div className="relative mb-5 hidden aspect-[16/10] overflow-hidden rounded-xl ring-1 ring-ink/10 [@media(hover:none)]:block">
                       <Image src={s.image} alt={`${first?.title ?? s.title} screenshot`} fill sizes="(max-width: 768px) 100vw, 380px" className="object-cover object-top" />
                     </div>
                     <p className="text-base leading-relaxed text-mute transition-colors group-hover:text-bg/85 group-focus-within:text-bg/85">{s.line}</p>
@@ -209,7 +212,7 @@ export function ServicesSection() {
       {preview && (
         <div ref={card} aria-hidden className="pointer-events-none fixed left-0 top-0 z-50 h-[270px] w-[380px]">
           <div
-            className={`relative h-full w-full overflow-hidden rounded-[14px] shadow-[0_40px_80px_-30px_rgba(58,20,38,0.55),0_0_0_6px_#FBF7F1] transition-[opacity,scale] duration-300 ${
+            className={`relative h-full w-full overflow-hidden rounded-[14px] shadow-[0_40px_80px_-30px_rgba(58,20,38,0.55),0_0_0_6px_#FBF7F1] transition-[opacity,scale] duration-300 motion-reduce:transition-opacity ${
               active === null ? 'scale-75 opacity-0' : 'scale-100 opacity-100'
             }`}
           >
@@ -220,7 +223,7 @@ export function ServicesSection() {
                 alt=""
                 fill
                 sizes="380px"
-                className={`object-cover object-top transition-[opacity,scale] duration-700 ease-[cubic-bezier(.16,1,.3,1)] ${
+                className={`object-cover object-top transition-[opacity,scale] duration-700 ease-[cubic-bezier(.16,1,.3,1)] motion-reduce:transition-opacity ${
                   active === i ? 'scale-100 opacity-100' : 'scale-110 opacity-0'
                 }`}
               />
