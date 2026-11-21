@@ -57,7 +57,7 @@ export default function BuildsHall({ slug }: { slug: string }) {
 
   return (
     <main id="main" className="bg-bg text-ink selection:bg-accent/30">
-      <div ref={pin} className="relative" style={{ height: `${100 + items.length * 70}vh` }}>
+      <div ref={pin} className="relative" style={{ height: `${100 + items.length * 45}vh` }}>
         <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden">
           {/* top bar */}
           <div className="relative z-10 flex flex-wrap items-end justify-between gap-4 px-5 pt-24 md:px-10 md:pt-28">

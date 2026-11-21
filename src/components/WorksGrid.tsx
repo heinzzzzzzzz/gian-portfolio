@@ -157,7 +157,7 @@ export default function WorksGrid() {
   const build = reduce ? done : scrollYProgress;
 
   return (
-    <section id="work" ref={pin} className="relative h-[340vh] bg-bg">
+    <section id="work" ref={pin} className="relative h-[220vh] bg-bg">
       <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden px-5 pt-24 pb-6 md:px-10 md:pt-24">
         {/* Header */}
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">

@@ -47,7 +47,7 @@ export default function Process() {
   return (
     <section id="process" className="scroll-mt-24 bg-surface">
       {/* ---------- desktop: pinned scene ---------- */}
-      <div ref={pinRef} className="relative hidden h-[420vh] lg:block">
+      <div ref={pinRef} className="relative hidden h-[300vh] lg:block">
         <div className="sticky top-0 mx-auto grid h-dvh max-w-7xl grid-cols-2 items-center gap-16 px-10">
           <div>
             <p className="text-[15px] text-mute">How a project actually goes</p>

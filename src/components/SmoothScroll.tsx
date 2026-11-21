@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import Lenis from 'lenis';
 import { MotionConfig } from 'framer-motion';
 import { useMotionForced } from '@/lib/motion';
 
@@ -22,26 +21,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     location.replace(url.toString());
   }, []);
 
-  useEffect(() => {
-    // lerp 0.085: a film-like glide that trails the wheel a little and eases to
-    // a stop, without tipping into feeling like input lag.
-    const lenis = new Lenis({
-      lerp: 0.085,
-      wheelMultiplier: 0.9,
-      touchMultiplier: 1.5,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
+  // Scrolling is the browser's own on purpose: wheel, trackpad, arrow keys and
+  // touch all move at the speed the visitor's device is tuned to. A JS smoothing
+  // layer (Lenis) used to sit on top; on trackpads, which already glide, that
+  // double-smoothing read as lag. The scroll-driven scenes still animate off it.
 
   // reducedMotion="user": framer skips transform animations for people who
   // turn on Reduce Motion, without each component branching on it (which

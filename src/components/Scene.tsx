@@ -58,8 +58,8 @@ export default function Scene({ children, className = 'bg-bg' }: { children: Rea
 
   return (
     <div ref={ref} className={`relative overflow-x-clip ${className}`}>
-      <motion.div style={reduce ? undefined : { y: outY, opacity: outOpacity, willChange: 'transform, opacity' }}>
-        <motion.div style={reduce ? undefined : { y: inY, opacity: inOpacity, willChange: 'transform, opacity' }}>
+      <motion.div style={reduce ? undefined : { y: outY, opacity: outOpacity }}>
+        <motion.div style={reduce ? undefined : { y: inY, opacity: inOpacity }}>
           {children}
         </motion.div>
       </motion.div>

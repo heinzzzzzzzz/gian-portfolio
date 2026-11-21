@@ -29,7 +29,7 @@ export default function StickerToss() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
 
   return (
-    <div ref={ref} className="relative h-[260vh] bg-bg">
+    <div ref={ref} className="relative h-[170vh] bg-bg">
       <div
         role="img"
         aria-label="What I build: n8n workflows, AI chatbots, voice agents, CRM automation."
