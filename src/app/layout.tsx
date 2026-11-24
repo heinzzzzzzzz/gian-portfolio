@@ -62,6 +62,14 @@ export default function RootLayout({
     // not, and every font silently fell back to the system font.)
     <html lang="en" className={`${sans.variable} ${script.variable}`} suppressHydrationWarning>
       <head>
+        {/* Netlify injects a promo comment (plus a line break) into every page's
+            <head>. React finds nodes it didn't render there and throws
+            hydration error #418, then re-renders the whole page in the
+            browser. Netlify has no switch for it, so remove comments and blank
+            text from <head> before React hydrates. */}
+        <Script id="head-clean" strategy="beforeInteractive">
+          {"try{var h=document.head,n=h.firstChild,x;while(n){x=n.nextSibling;if(n.nodeType===8||(n.nodeType===3&&!n.nodeValue.trim()))h.removeChild(n);n=x}}catch(e){}"}
+        </Script>
         {/* Before first paint: skip the loader on repeat visits and for Reduce Motion. */}
         <Script id="intro-gate" strategy="beforeInteractive">
           {"try{if(sessionStorage.getItem('gb-intro')==='1'||(matchMedia('(prefers-reduced-motion: reduce)').matches&&localStorage.getItem('gb-motion')!=='full'))document.documentElement.classList.add('intro-seen');if(localStorage.getItem('gb-motion')==='full')document.documentElement.classList.add('motion-full')}catch(e){}"}

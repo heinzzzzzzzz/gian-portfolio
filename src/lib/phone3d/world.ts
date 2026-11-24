@@ -310,7 +310,8 @@ export function createWorld(canvas: HTMLCanvasElement, opts: { calm: () => boole
   const chapterLayout = (side: 'left' | 'right', W: number, vh: number, calm: boolean, panelTop = 0) => {
     if (mobile()) {
       // the phone and its cards fit in the space above the text panel, however tall the text is
-      const avail = clamp(panelTop > 0 ? panelTop - 10 : vh * 0.42, vh * 0.26, vh * 0.5);
+      // never more than the space above the text (a minimum here is what made it overlap on iPhones)
+      const avail = clamp(panelTop > 0 ? panelTop - 12 : vh * 0.42, 60, vh * 0.5);
       const h = Math.min(vh * 0.33, avail * 0.86);
       const pose = poseAt(W / 2, Math.max(avail / 2 + 4, h / 2 + 8), h, -0.12 + (calm ? 0 : mxs * 0.3), 0, 0);
       const unit = pose.s * ppu();

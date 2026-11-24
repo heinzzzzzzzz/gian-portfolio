@@ -57,12 +57,12 @@ function Chapter({ id, children, anchors }: { id: ChapterId; children: (p: Phase
         {/* the phone takes one side (lib/chapters.ts), the text the other */}
         <div className={`mx-auto grid h-full max-w-7xl ${def.side === 'right' ? 'lg:grid-cols-[minmax(0,0.44fr)_minmax(0,0.56fr)]' : 'lg:grid-cols-[minmax(0,0.56fr)_minmax(0,0.44fr)]'}`}>
           <div
-            className={`relative z-[45] flex flex-col justify-end px-5 pb-8 transition-opacity duration-500 lg:justify-center lg:px-10 lg:pb-0 ${def.side === 'left' ? 'lg:col-start-2' : ''} ${
+            className={`relative z-[45] flex flex-col justify-end px-4 pb-5 transition-opacity duration-500 lg:justify-center lg:px-10 lg:pb-0 ${def.side === 'left' ? 'lg:col-start-2' : ''} ${
               phase.visible ? 'opacity-100' : 'pointer-events-none opacity-0'
             }`}
           >
             {/* on phones the 3D sits in the top half; this panel keeps the text readable below it */}
-            <div data-chapter-panel className="rounded-3xl bg-bg/90 p-5 shadow-[0_-20px_40px_-20px_rgba(71,67,41,0.25)] lg:bg-transparent lg:p-0 lg:shadow-none">{children(phase)}</div>
+            <div data-chapter-panel className="rounded-3xl bg-bg/90 p-4 shadow-[0_-20px_40px_-20px_rgba(71,67,41,0.25)] lg:bg-transparent lg:p-0 lg:shadow-none">{children(phase)}</div>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@ function Steps({ n, at }: { n: number; at: number }) {
 }
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="headline text-[clamp(36px,9vw,48px)] font-extrabold leading-[0.92] tracking-[-0.045em] text-ink lg:text-[clamp(44px,4.6vw,72px)]">{children}</h2>
+  <h2 className="headline text-[clamp(30px,8vw,44px)] font-extrabold leading-[0.92] tracking-[-0.045em] text-ink lg:text-[clamp(44px,4.6vw,72px)]">{children}</h2>
 );
 const Swap = ({ k, children }: { k: number; children: React.ReactNode }) => (
   <div key={k} className="animate-[chapter-in_0.45s_ease-out]">
@@ -217,6 +217,9 @@ export function SkillsChapter() {
 
 /* ---------------- About ---------------- */
 export function AboutChapter() {
+  // on phones the paragraph folds to 4 lines so the 3D above it has room
+  const [more, setMore] = useState(false);
+  const fold = more ? '' : 'max-lg:line-clamp-4';
   return (
     <Chapter id="about">
       {({ step }) => (
@@ -227,21 +230,24 @@ export function AboutChapter() {
           </H2>
           <Swap k={step}>
             {step === 0 ? (
-              <p className="mt-4 max-w-[46ch] text-base leading-relaxed text-mute">
+              <p className={`mt-3 max-w-[46ch] text-[15px] leading-relaxed text-mute lg:mt-4 lg:text-base ${fold}`}>
                 I&apos;m Gian Benedict Bigay, an Automation Specialist who works mostly in n8n. For client brands I designed and ran the content engines, multi-platform distribution and CRM reporting that kept them publishing daily without anyone touching a keyboard.
               </p>
             ) : (
-              <p className="mt-4 max-w-[46ch] text-base leading-relaxed text-mute">
+              <p className={`mt-3 max-w-[46ch] text-[15px] leading-relaxed text-mute lg:mt-4 lg:text-base ${fold}`}>
                 Outside the pipelines I build the products themselves: an offline-first Flutter finance app, a room and equipment booking system for Universidad de Manila, a PHP e-commerce store, and AI voice receptionists. Same habits everywhere: shape the data once, fail loudly, make every run safe to repeat.
               </p>
             )}
           </Swap>
-          <p className="mt-3 text-[13px] text-faint">Quezon City, Philippines · GMT+8 · freelance, open for new projects</p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <a href="#book" className="inline-flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-bg hover:bg-accent hover:text-on-accent">
+          <button type="button" onClick={() => setMore((m) => !m)} className="mt-1 text-[13px] font-semibold text-accent-ink underline underline-offset-4 lg:hidden">
+            {more ? 'Show less' : 'Read more'}
+          </button>
+          <p className="mt-3 hidden text-[13px] text-faint lg:block">Quezon City, Philippines · GMT+8 · freelance, open for new projects</p>
+          <div className="mt-3 flex flex-wrap gap-2 lg:mt-5 lg:gap-3">
+            <a href="#book" className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-4 text-[13px] font-semibold text-bg hover:bg-accent hover:text-on-accent lg:h-11 lg:px-5 lg:text-sm">
               Let&apos;s build something <ArrowUpRight className="h-4 w-4" />
             </a>
-            <a href="/assets/resume.pdf" download className="inline-flex h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold text-ink ring-1 ring-ink/25 hover:ring-ink/50">
+            <a href="/assets/resume.pdf" download className="inline-flex h-10 items-center gap-2 rounded-full px-4 text-[13px] font-semibold lg:h-11 lg:px-5 lg:text-sm text-ink ring-1 ring-ink/25 hover:ring-ink/50">
               <ArrowDownToLine className="h-4 w-4" /> Resume
             </a>
           </div>
@@ -282,7 +288,7 @@ export function ContactChapter() {
             <H2>
               Have a process worth <span className="script neon font-normal tracking-normal">automating?</span>
             </H2>
-            <ol className="mt-4 space-y-2 text-[15px] leading-relaxed text-mute">
+            <ol className="mt-3 space-y-1.5 text-[14px] leading-snug text-mute lg:mt-4 lg:space-y-2 lg:text-[15px] lg:leading-relaxed">
               {['You walk me through the process that eats your week.', 'I sketch how I would automate it and what it would touch.', 'You leave with a clear next step, whether we work together or not.'].map((s, i) => (
                 <li key={s} className="flex gap-3">
                   <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent text-[12px] font-bold text-on-accent">{i + 1}</span>
@@ -290,21 +296,21 @@ export function ContactChapter() {
                 </li>
               ))}
             </ol>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <button type="button" onClick={openCal} className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-base font-bold text-on-accent shadow-[0_14px_30px_-10px_rgba(255,111,166,1)]">
+            <div className="mt-4 flex flex-wrap gap-2 lg:mt-5">
+              <button type="button" onClick={openCal} className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-[15px] font-bold lg:h-12 lg:px-6 lg:text-base text-on-accent shadow-[0_14px_30px_-10px_rgba(255,111,166,1)]">
                 <CalendarDays className="h-5 w-5" /> Pick a time
               </button>
-              <a href="mailto:gianbenedict.bigay07@gmail.com" className="inline-flex h-12 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink ring-1 ring-ink/25">
+              <a href="mailto:gianbenedict.bigay07@gmail.com" className="inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-[13px] lg:h-12 lg:px-4 lg:text-sm font-semibold text-ink ring-1 ring-ink/25">
                 <Mail className="h-4 w-4" /> Email
               </a>
-              <Link href="/ai-link" className="inline-flex h-12 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink ring-1 ring-ink/25">
+              <Link href="/ai-link" className="inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-[13px] lg:h-12 lg:px-4 lg:text-sm font-semibold text-ink ring-1 ring-ink/25">
                 <Sparkles className="h-4 w-4" /> Ask my AI first
               </Link>
-              <a href="https://www.linkedin.com/in/gian-benedict-6043193a4/" target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 rounded-full px-4 text-sm font-semibold text-ink ring-1 ring-ink/25">
+              <a href="https://www.linkedin.com/in/gian-benedict-6043193a4/" target="_blank" rel="noopener noreferrer" className="inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-[13px] lg:h-12 lg:px-4 lg:text-sm font-semibold text-ink ring-1 ring-ink/25">
                 LinkedIn <ArrowUpRight className="h-4 w-4" />
               </a>
             </div>
-            <p className="mt-3 text-[13px] text-faint">Free, 20 minutes, in your own timezone. I&apos;m in Manila, GMT+8.</p>
+            <p className="mt-3 hidden text-[13px] text-faint lg:block">Free, 20 minutes, in your own timezone. I&apos;m in Manila, GMT+8.</p>
           </>
         )}
       </Chapter>
