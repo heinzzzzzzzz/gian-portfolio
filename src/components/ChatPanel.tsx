@@ -15,11 +15,15 @@ export default function ChatPanel({
   initialQuestion,
   className = '',
   autoFocus = false,
+  hideHeader = false,
+  hideChips = false,
 }: {
   agent: GianAgent;
   initialQuestion?: string | null;
   className?: string;
   autoFocus?: boolean;
+  hideHeader?: boolean; // the call panel draws its own header
+  hideChips?: boolean; // the call panel needs the room for the transcript
 }) {
   const { messages, thinking, send, call } = agent;
   const [text, setText] = useState('');
@@ -53,6 +57,7 @@ export default function ChatPanel({
     <div className={`relative rounded-[22px] p-[1.5px] glow-border shadow-[0_30px_80px_-30px_rgba(255,111,166,0.75)] ${className}`}>
       <div className="flex h-full flex-col overflow-hidden rounded-[21px] bg-card">
         {/* Header */}
+        {!hideHeader && (
         <div
           className={`flex items-center gap-3 px-4 py-3 border-b transition-colors duration-300 ${
             onCall ? 'bg-accent text-on-accent border-accent' : 'bg-cardhi/70 border-line'
@@ -93,6 +98,7 @@ export default function ChatPanel({
             <span className="hidden sm:inline">{onCall ? 'End' : 'Call'}</span>
           </button>
         </div>
+        )}
 
         {/* Thread */}
         <div ref={scrollRef} data-dim style={{ ['--dim-delay' as string]: '0.45s' }} data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-3 bg-[radial-gradient(ellipse_at_top,rgba(255,111,166,0.06),transparent_60%)]">
@@ -112,11 +118,11 @@ export default function ChatPanel({
                       : 'bg-cardhi border border-line text-ink rounded-bl-md'
                   }`}
                 >
-                  {m.via === 'voice' && (
-                    <span className={`mb-1 flex items-center gap-1 font-mono text-[9px] uppercase tracking-[0.16em] ${m.role === 'user' ? 'text-bg/60' : 'text-accent-deep'}`}>
-                      <Mic className="w-3 h-3" /> voice
-                    </span>
-                  )}
+                  {/* who said it, so a voice transcript reads like a conversation */}
+                  <span className={`mb-1 flex items-center gap-1 text-[11px] font-bold ${m.role === 'user' ? 'text-bg/70' : 'text-accent-deep'}`}>
+                    {m.via === 'voice' && <Mic className="w-3 h-3" aria-hidden />}
+                    {m.role === 'user' ? 'You' : 'Gian’s AI'}
+                  </span>
                   {m.content || <span className="text-faint">…</span>}
                 </div>
               </motion.div>
@@ -141,7 +147,7 @@ export default function ChatPanel({
         {/* Suggestions + input */}
         <div data-dim style={{ ['--dim-delay' as string]: '0.5s' }} className="border-t border-line bg-cardhi/60 px-3 pt-3 pb-3">
           {/* Wrapped, not a hidden sideways scroller, so every suggestion is visible. */}
-          <div className="flex flex-wrap gap-2 pb-2">
+          <div className={`flex flex-wrap gap-2 pb-2 ${hideChips ? 'hidden' : ''}`}>
             {CHIPS.map((c) => (
               <button
                 key={c}

@@ -55,6 +55,13 @@
 html {
   scroll-behavior: smooth;
 }
+/* Lenis (mouse-wheel smoothing) drives the scroll itself while it runs */
+html.lenis-smooth {
+  scroll-behavior: auto;
+}
+html.lenis-stopped {
+  overflow: clip;
+}
 
 body {
   @apply bg-bg text-ink antialiased overflow-x-hidden;
@@ -474,3 +481,168 @@ html.night .pp-night { filter: drop-shadow(0 0 1.5px rgb(255 95 168 / 0.7)) drop
 }
 .curtain--night { --c-deep: #22071e; --c-mid: #4a1240; --c-light: #8a2a73; --c-trim: #ff5fa8; --c-glow: rgb(255 95 168 / 0.8); }
 .curtain--day { --c-deep: #e5779f; --c-mid: #f59bbf; --c-light: #ffd0e2; --c-trim: #ffe2b0; --c-glow: rgb(255 214 165 / 0.9); }
+
+/* ==================================================================
+   Live canvas (LiveCanvas.tsx): wires draw and nodes pop in as the
+   pinned section scrolls. Without scroll timelines, or with reduced
+   motion, everything is simply shown.
+   ================================================================== */
+.lc-stage { view-timeline: --lc block; }
+@keyframes lc-draw { to { stroke-dashoffset: 0; } }
+@keyframes lc-pop {
+  from { opacity: 0; scale: 0.88; translate: 0 0.8em; }
+  to { opacity: 1; scale: 1; translate: 0 0; }
+}
+@supports ((animation-timeline: view()) and (animation-range: contain 0% contain 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lc-wire { stroke-dasharray: 1; stroke-dashoffset: 1; animation: lc-draw linear both; animation-timeline: --lc; }
+    .lc-pop { animation: lc-pop linear both; animation-timeline: --lc; }
+  }
+  html.motion-full .lc-wire { stroke-dasharray: 1; stroke-dashoffset: 1; animation: lc-draw linear both; animation-timeline: --lc; }
+  html.motion-full .lc-pop { animation: lc-pop linear both; animation-timeline: --lc; }
+}
+html.night .lc-live { background-color: #3a1a34; color: #ffeaf4; }
+html.night .lc-live .lc-live-sub { color: #e8bcd2; }
+
+/* ==================================================================
+   Call card (hero): Gian's AI as an incoming call.
+   ================================================================== */
+.cc-ring text { font-family: var(--font-head); }
+html.night .cc-night-bg { background: radial-gradient(circle at 50% 35%, #6a2a5e 0%, #3a1534 60%, #1c0b19 100%); }
+@keyframes cc-pulse { from { transform: scale(1); opacity: 0.7; } to { transform: scale(1.22); opacity: 0; } }
+@keyframes cc-spin { to { transform: rotate(360deg); } }
+@keyframes cc-dot { from { transform: scale(1); opacity: 0.7; } to { transform: scale(2.6); opacity: 0; } }
+.cc-pulse { opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .cc-pulse { animation: cc-pulse 2.6s ease-out infinite; }
+  .cc-pulse-2 { animation-delay: 1.3s; }
+  .cc-ring { animation: cc-spin 48s linear infinite; }
+  .cc-dot { animation: cc-dot 1.8s ease-out infinite; }
+}
+html.motion-full .cc-pulse { animation: cc-pulse 2.6s ease-out infinite; }
+html.motion-full .cc-pulse-2 { animation-delay: 1.3s; }
+html.motion-full .cc-ring { animation: cc-spin 48s linear infinite; }
+html.motion-full .cc-dot { animation: cc-dot 1.8s ease-out infinite; }
+
+/* ==================================================================
+   Chat panel dialog: slides in from the right (desktop) or up from the
+   bottom (phones). Native <dialog>, so focus, Esc and inertness are free.
+   ================================================================== */
+dialog.chat-dialog {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  max-width: none;
+  max-height: none;
+  position: fixed;
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 90dvh;
+  overscroll-behavior: contain;
+  overflow: visible;
+  opacity: 0;
+  transition-property: opacity, translate, display, overlay;
+  transition-duration: 0.28s;
+  transition-timing-function: ease-out;
+  transition-behavior: allow-discrete;
+}
+@media (min-width: 768px) {
+  dialog.chat-dialog { inset: 24px 24px 24px auto; width: min(430px, calc(100vw - 48px)); height: auto; }
+}
+dialog.chat-dialog[open] {
+  opacity: 1;
+  @starting-style { opacity: 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    translate: 0 0;
+    @starting-style { translate: 0 24px; }
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog.chat-dialog:not([open]) { translate: 0 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog.chat-dialog { transition-duration: 0.1s; }
+}
+dialog.chat-dialog::backdrop {
+  background-color: rgb(28 11 25 / 0);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  transition-property: background-color, display, overlay;
+  transition-duration: 0.28s;
+  transition-behavior: allow-discrete;
+}
+dialog.chat-dialog[open]::backdrop {
+  background-color: rgb(28 11 25 / 0.45);
+  @starting-style { background-color: rgb(28 11 25 / 0); }
+}
+
+/* chapter text swaps in when the step changes */
+@keyframes chapter-in {
+  from { opacity: 0; translate: 0 10px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not(.motion-full) .animate-\[chapter-in_0\.45s_ease-out\] { animation: none; }
+}
+
+/* ---------- the call panel (components/CallPanel.tsx) ---------- */
+.call-scrim {
+  background: rgb(28 11 25 / 0.38);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease-out;
+}
+.call-scrim.is-open { opacity: 1; pointer-events: auto; }
+dialog.call-panel {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  max-width: none;
+  max-height: none;
+  position: fixed;
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 72dvh;
+  padding: 12px;
+  overflow: visible;
+  overscroll-behavior: contain;
+  opacity: 0;
+  transition-property: opacity, translate, display, overlay;
+  transition-duration: 0.35s;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-behavior: allow-discrete;
+}
+@media (min-width: 768px) {
+  dialog.call-panel { inset: 24px 24px 24px auto; width: min(440px, calc(100vw - 48px)); height: auto; padding: 0; }
+}
+dialog.call-panel:popover-open {
+  opacity: 1;
+  @starting-style { opacity: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog.call-panel { translate: 0 40px; }
+  @media (min-width: 768px) { dialog.call-panel { translate: 60px 0; } }
+  dialog.call-panel:popover-open {
+    translate: 0 0;
+    @starting-style { translate: 0 40px; }
+  }
+  @media (min-width: 768px) {
+    dialog.call-panel:popover-open { @starting-style { translate: 60px 0; } }
+  }
+}
+.call-live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #34c76f;
+  box-shadow: 0 0 0 0 rgb(52 199 111 / 0.6);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .call-live-dot { animation: call-live 1.4s ease-out infinite; }
+}
+@keyframes call-live {
+  to { box-shadow: 0 0 0 8px rgb(52 199 111 / 0); }
+}

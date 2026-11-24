@@ -31,10 +31,10 @@ const DESCRIPTION =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: 'Gian Benedict · Automation Engineer',
+  title: 'Gian Benedict · Automation Specialist',
   description: DESCRIPTION,
   openGraph: {
-    title: 'Gian Benedict · Automation Engineer',
+    title: 'Gian Benedict · Automation Specialist',
     description: DESCRIPTION,
     url: SITE,
     siteName: 'Gian Benedict',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Gian Benedict · Automation Engineer',
+    title: 'Gian Benedict · Automation Specialist',
     description: DESCRIPTION,
   },
 };

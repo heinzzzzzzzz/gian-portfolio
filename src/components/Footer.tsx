@@ -59,7 +59,7 @@ export default function Footer() {
               <p className="mt-6 max-w-[36ch] text-[17px] leading-relaxed text-mute">
                 If something here reminded you of a process you hate doing by hand, send it my way. I&apos;ll reply with how I&apos;d build it.
               </p>
-              <p className="mt-10 text-sm text-mute md:mt-auto md:pt-10">Gian Benedict · Automation Engineer</p>
+              <p className="mt-10 text-sm text-mute md:mt-auto md:pt-10">Gian Benedict · Automation Specialist</p>
             </div>
 
             {/* Address side */}

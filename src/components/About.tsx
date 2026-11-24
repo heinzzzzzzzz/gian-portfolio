@@ -6,7 +6,7 @@ import { ArrowUpRight, ArrowDownToLine, MapPin, Briefcase, Compass } from 'lucid
 
 const facts = [
   { icon: MapPin, k: 'Based in', v: 'Quezon City, Philippines · GMT+8, works with teams anywhere' },
-  { icon: Briefcase, k: 'Currently', v: 'Freelance Automation Engineer, open for new projects' },
+  { icon: Briefcase, k: 'Currently', v: 'Freelance Automation Specialist, open for new projects' },
   { icon: Compass, k: 'Principle', v: 'One engine, any audience: build the machine once, swap the config per client' },
 ];
 
@@ -44,7 +44,7 @@ export default function About() {
             I turn repetitive work into <span className="serif-italic text-accent-ink font-normal">infrastructure.</span>
           </h2>
           <p className="mt-8 text-mute leading-relaxed text-lg max-w-[62ch]">
-            I&apos;m Gian Benedict Bigay, an Automation Engineer who works mostly in n8n. For client brands I designed and ran the content engines, multi-platform distribution and CRM reporting that kept them publishing daily without anyone touching a keyboard.
+            I&apos;m Gian Benedict Bigay, an Automation Specialist who works mostly in n8n. For client brands I designed and ran the content engines, multi-platform distribution and CRM reporting that kept them publishing daily without anyone touching a keyboard.
           </p>
           <p className="mt-4 text-mute leading-relaxed text-lg max-w-[62ch]">
             Outside the pipelines I build the products themselves: an offline-first Flutter finance app, a room and equipment booking system for Universidad de Manila, a PHP e-commerce store, and AI voice receptionists. Same habits everywhere: shape the data once, fail loudly, make every run safe to repeat.

@@ -1,192 +1,181 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
-import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
+import Image from 'next/image';
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
+import { MessageCircle, Phone, PhoneOff, Loader2, ArrowRight } from 'lucide-react';
 import { useGianAgent } from '@/lib/useGianAgent';
 import { useIntroDone } from '@/lib/intro';
-import Portrait from './Portrait';
-import VoiceButton from './VoiceButton';
-import ChatPanel from './ChatPanel';
+import { stage, useStage } from '@/lib/stage';
 import NightGlam from './NightGlam';
-import { ArrowRight } from 'lucide-react';
+import ChatDialog from './ChatDialog';
+import FloatingAI from './FloatingAI';
+import CallPanel from './CallPanel';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const BOOKING = 'https://cal.com/gian-benedict-ctcofe/discovery-call';
-const LINES = ['Built', 'once.', 'Runs', 'forever.'];
-const COLS = 'md:grid-cols-[1.1fr_0.9fr_1fr]';
+const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-// The pinned, receding hero is a desktop effect; on phones the hero scrolls normally.
-const DESKTOP = '(min-width: 768px)';
+const DESKTOP = '(min-width: 1024px)';
 const subscribe = (cb: () => void) => {
   const mq = window.matchMedia(DESKTOP);
   mq.addEventListener('change', cb);
   return () => mq.removeEventListener('change', cb);
 };
-const useIsDesktop = () =>
-  useSyncExternalStore(subscribe, () => window.matchMedia(DESKTOP).matches, () => true);
+const useIsDesktop = () => useSyncExternalStore(subscribe, () => window.matchMedia(DESKTOP).matches, () => true);
+const useMounted = () => useSyncExternalStore(() => () => {}, () => true, () => false);
 
+/*
+ * Hero: Gian's AI is calling you. The 3D phone (drawn by Stage3D) rings in the
+ * slot on the right; tap it, or press Answer, to start the real voice call.
+ * Text opens the chat panel. After the hero the phone rides in the corner.
+ */
 export default function Hero() {
   const agent = useGianAgent();
   const isDesktop = useIsDesktop();
+  const mounted = useMounted();
   const ready = useIntroDone();
+  const has3D = useStage((s) => s.ready);
+  const chatRef = useRef<HTMLDialogElement>(null);
+  const openChat = useCallback(() => chatRef.current?.showModal(), []);
+  const { status, seconds, volume, speaking, toggle } = agent.call;
+  const active = status === 'active';
+  const connecting = status === 'connecting';
 
-  // Scene exit: the hero pushes back and fades out while the next scene slides over it.
+  // a call opens the call panel (and the 3D phone flies over to its left)
+  const [callOpen, setCallOpen] = useState(false);
+  const [lastStatus, setLastStatus] = useState(status);
+  if (status !== lastStatus) {
+    setLastStatus(status);
+    if (status === 'connecting') setCallOpen(true);
+  }
+  const closeCall = useCallback(() => setCallOpen(false), []);
+  // dev only: lets the screenshot scripts open the call panel without a real (paid) Vapi call
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return;
+    (window as unknown as { __demoCall?: () => void }).__demoCall = () => setCallOpen(true);
+  }, []);
+  useEffect(() => {
+    if (callOpen) chatRef.current?.close(); // the call panel replaces the chat window
+  }, [callOpen]);
+  useEffect(() => {
+    stage.set({ callPanel: callOpen });
+  }, [callOpen]);
+
+  // the 3D phone shows the call state on its screen
+  useEffect(() => {
+    stage.set({ call: { status: status === 'error' ? 'error' : active ? 'active' : connecting ? 'connecting' : 'idle', seconds, volume, speaking } });
+  }, [status, active, connecting, seconds, volume, speaking]);
+
   const { scrollY } = useScroll();
-  const fade = useTransform(scrollY, [0, 550], [1, 0]);
-  const recede = useTransform(scrollY, [0, 900], [1, 0.9]);
-  const drift = useTransform(scrollY, [0, 900], [0, -60]);
+  const fade = useTransform(scrollY, [0, 500], [1, 0]);
   const [covered, setCovered] = useState(false);
   useMotionValueEvent(scrollY, 'change', (y) => {
     const next = y > window.innerHeight * 1.05;
     setCovered((c) => (c === next ? c : next));
   });
 
-  const rise = (delay: number, y = 40) => ({
-    initial: { opacity: 0, y },
-    animate: ready ? { opacity: 1, y: 0 } : { opacity: 0, y },
-    transition: { delay, duration: 1, ease: EASE },
+  const rise = (delay: number) => ({
+    initial: { opacity: 0, y: 24 },
+    animate: ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 },
+    transition: { delay, duration: 0.9, ease: EASE },
   });
 
   return (
     <section
-      className="relative md:sticky md:top-0 z-0 w-full md:h-[100svh] overflow-hidden bg-bg"
+      className="relative z-0 w-full overflow-hidden bg-bg lg:sticky lg:top-0 lg:h-[100svh] lg:min-h-[620px]"
       style={isDesktop && covered ? { visibility: 'hidden' } : undefined}
     >
       <NightGlam />
-      <div className="wall-grid absolute inset-0 pointer-events-none bg-[linear-gradient(to_right,rgb(71_67_41/0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgb(71_67_41/0.06)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(ellipse_75%_65%_at_50%_50%,#000_25%,transparent_100%)]" />
-
       <motion.div
-        style={isDesktop ? { opacity: fade, scale: recede, y: drift, transformOrigin: '50% 40%' } : undefined}
-        className="relative flex flex-col md:h-full px-5 md:px-10 pt-28 md:pt-24 pb-12 md:pb-6"
+        style={isDesktop ? { opacity: fade } : undefined}
+        className="relative mx-auto grid max-w-7xl items-center gap-6 px-5 pb-16 pt-24 lg:h-full lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:px-10 lg:pb-8 lg:pt-20"
       >
-        <div className={`relative z-20 grid grid-cols-1 ${COLS} gap-x-8 gap-y-12 md:flex-1 md:min-h-0`}>
-          {/* Left: headline, one line, one button */}
-          <div className="relative min-w-0 flex flex-col justify-between gap-10 md:min-h-0">
-            <div className="relative text-[19vw] md:text-[min(7vw,13.5vh)] md:mt-[2vh]">
-              <h1
-                data-dim
-                className="headline font-extrabold uppercase text-ink leading-[0.84] select-none"
-                aria-label="Built once. Runs forever."
-              >
-                {LINES.map((line, i) => (
-                  <span key={line} className="block overflow-hidden pb-[0.06em] -mb-[0.06em]">
-                    <motion.span
-                      initial={{ y: '110%' }}
-                      animate={ready ? { y: 0 } : { y: '110%' }}
-                      transition={{ duration: 1.1, delay: 0.1 + i * 0.09, ease: EASE }}
-                      className={`block ${i === 3 ? 'outline-text' : ''}`}
-                    >
-                      {line}
-                    </motion.span>
+        {/* Who he is, and the two ways in */}
+        <div className="order-2 lg:order-none">
+          <motion.p {...rise(0.1)} className="script neon neon-live -rotate-[4deg] text-[40px] leading-none lg:text-[clamp(36px,3.4vw,54px)]">
+            Gian Benedict
+          </motion.p>
+          <motion.h1 {...rise(0.18)} className="headline mt-3 text-[clamp(46px,12vw,64px)] font-extrabold leading-[0.9] tracking-[-0.045em] text-ink lg:text-[clamp(52px,6vw,96px)]">
+            Automation specialist<span className="text-accent-ink">.</span>
+          </motion.h1>
+          <motion.p {...rise(0.26)} className="mt-5 max-w-[38ch] text-[17px] leading-relaxed text-mute lg:text-lg">
+            I build n8n workflows and AI agents for agencies and founders. That phone is my AI calling you. Pick up, or text it back.
+          </motion.p>
+          <motion.div {...rise(0.34)} className="mt-7 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={toggle}
+              className={`inline-flex h-14 items-center gap-2.5 rounded-full px-6 text-base font-bold transition-transform duration-200 ease-out hover:-translate-y-0.5 ${
+                active ? 'bg-ink text-bg' : 'bg-accent text-on-accent shadow-[0_16px_36px_-10px_rgba(255,111,166,1)]'
+              }`}
+            >
+              {connecting ? <Loader2 className="h-5 w-5 animate-spin" /> : active ? <PhoneOff className="h-5 w-5" /> : <Phone className="h-5 w-5" />}
+              {connecting ? 'Connecting…' : active ? `Hang up · ${fmt(seconds)}` : 'Answer the call'}
+            </button>
+            <button
+              type="button"
+              onClick={openChat}
+              className="inline-flex h-14 items-center gap-2.5 rounded-full bg-card px-6 text-base font-bold text-ink ring-2 ring-ink/15 transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:ring-accent"
+            >
+              <MessageCircle className="h-5 w-5" /> Text it back
+            </button>
+          </motion.div>
+          {status === 'error' && (
+            <p className="mt-3 text-sm text-accent-ink" role="alert">
+              Couldn&apos;t connect: {agent.call.error}. Allow the mic, then try again.
+            </p>
+          )}
+          <motion.a
+            {...rise(0.42)}
+            href={BOOKING}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cta="book"
+            className="group mt-6 inline-flex items-center gap-2 border-b-2 border-ink/25 pb-1 text-[15px] font-bold text-ink transition-colors hover:border-accent hover:text-accent-ink"
+          >
+            Or book 20 minutes with the real me
+            <ArrowRight className="h-4 w-4 transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-1" />
+          </motion.a>
+        </div>
+
+        {/* Where the 3D phone rings. The phone itself is the answer button. */}
+        <div className="relative order-1 lg:order-none">
+          <button
+            type="button"
+            data-phone-slot
+            onClick={toggle}
+            aria-label={active ? 'End the call with Gian’s AI' : 'Answer the call from Gian’s AI'}
+            className="relative mx-auto block h-[min(440px,58svh)] w-full touch-pan-y rounded-[40px] lg:h-[min(76svh,720px)]"
+          >
+            {/* flat fallback while 3D loads, or if the device has no WebGL */}
+            {!has3D && (
+              <span className="absolute left-1/2 top-1/2 block aspect-[1/2.04] h-[88%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[36px] bg-ink p-2 shadow-2xl">
+                <span className="relative block h-full w-full overflow-hidden rounded-[30px] bg-[linear-gradient(160deg,#FFE9F1,#F2B8CF)]">
+                  <span className="absolute left-1/2 top-[22%] block h-28 w-28 -translate-x-1/2 overflow-hidden rounded-full ring-4 ring-accent/50">
+                    <Image src="/avatar.jpg" alt="" fill sizes="112px" className="object-cover" />
                   </span>
-                ))}
-              </h1>
-              <motion.span
-                aria-hidden
-                initial={{ opacity: 0 }}
-                animate={ready ? { opacity: [0, 1, 0.35, 1, 0.6, 1] } : { opacity: 0 }}
-                transition={{ delay: 0.75, duration: 0.9, times: [0, 0.2, 0.32, 0.5, 0.62, 1], ease: 'easeOut' }}
-                className="script neon neon-live absolute z-30 left-[22%] md:left-[42%] top-[1.02em] text-[0.5em] md:text-[0.62em] leading-none whitespace-nowrap -rotate-[8deg] pointer-events-none"
-              >
-                Gian Benedict
-              </motion.span>
-            </div>
-
-            <motion.div {...rise(0.6, 16)}>
-              <p data-dim style={{ ['--dim-delay' as string]: '0.15s' }} className="max-w-[34ch] text-[15px] md:text-base leading-relaxed text-mute">
-                I build n8n workflows and AI agents for agencies and founders. The AI on this page is one of them. Go ahead, talk to it.
-              </p>
-              <a
-                href={BOOKING}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cta="book"
-                data-dim
-                style={{ ['--dim-delay' as string]: '0.25s' }}
-                className="group mt-4 inline-flex h-12 items-center gap-3 rounded-full bg-ink pl-6 pr-1.5 text-[15px] font-semibold text-bg transition-colors duration-200 ease-out hover:bg-accent hover:text-on-accent"
-              >
-                Book a discovery call
-                <span className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-bg text-ink">
-                  <ArrowRight className="h-4 w-4 transition-transform duration-[250ms] ease-out motion-safe:group-hover:translate-x-8" />
-                  <ArrowRight className="absolute h-4 w-4 -translate-x-8 transition-transform duration-[250ms] ease-out motion-safe:group-hover:translate-x-0" />
+                  <span className="absolute inset-x-0 top-[52%] text-center text-2xl font-extrabold text-ink">Gian&apos;s AI</span>
                 </span>
-              </a>
-            </motion.div>
-          </div>
-
-          {/* Center: the big portrait, and the voice AI as the loudest button on the page */}
-          <motion.div {...rise(0.2)} className="min-w-0 flex flex-col md:min-h-0">
-            <div className="relative h-[118vw] md:h-auto md:flex-1 md:min-h-0 [container-type:size]">
-              {/* Portrait's own root is position:relative, so the anchoring lives on this wrapper */}
-              <div data-dim style={{ ['--dim-delay' as string]: '0.3s' }} className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[min(100cqw,72cqh)] h-[min(139cqw,100cqh)]">
-                <Portrait priority className="h-full w-full" />
-              </div>
-            </div>
-            {/* The bubble sits right above the call button it points to, over the
-                empty floor of the portrait, so it never lands on the headline or face. */}
-            <div className="relative mt-5 md:mt-4 w-full max-w-[440px] mx-auto">
-              <SpeechBubble ready={ready} />
-              <VoiceButton agent={agent} big className="w-full" />
-            </div>
-          </motion.div>
-
-          {/* Right: live text chat with the same agent */}
-          <motion.div {...rise(0.4)} className="min-w-0 flex flex-col md:min-h-0">
-            <div className="flex items-end gap-2 pl-1 pb-1">
-              <span className="script neon neon-live text-[38px] md:text-[clamp(30px,3.1vw,46px)] leading-[1.15] -rotate-[3deg] whitespace-nowrap">
-                Talk to my AI self
               </span>
-              <svg aria-hidden viewBox="0 0 80 50" className="w-12 md:w-14 h-auto text-accent-ink mb-[-6px] shrink-0" fill="none">
-                <path d="M4 8 C 30 2, 58 10, 64 38" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <path d="M54 30 L 64 40 L 72 28" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <ChatPanel agent={agent} className="h-[480px] md:h-auto md:flex-1 md:min-h-0" />
-          </motion.div>
+            )}
+          </button>
+          <p className="mt-2 text-center text-[13px] font-semibold text-mute" aria-hidden>
+            {active ? 'On a call. Tap the phone to hang up.' : 'Tap the phone to answer, or grab it and spin it'}
+          </p>
         </div>
       </motion.div>
-    </section>
-  );
-}
 
-// A speech bubble pops up over the call button: typing dots first, then the line.
-// It points people at the two ways in before they read anything else.
-function SpeechBubble({ ready }: { ready: boolean }) {
-  const [typed, setTyped] = useState(false);
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-full z-10 mb-3 flex justify-center">
-    <motion.div
-      initial={{ opacity: 0, scale: 0.6, y: 10 }}
-      animate={ready ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.6, y: 10 }}
-      transition={{ delay: 1.2, type: 'spring', stiffness: 260, damping: 18 }}
-      onAnimationComplete={() => {
-        if (ready) setTimeout(() => setTyped(true), 900);
-      }}
-      style={{ transformOrigin: '50% 100%' }}
-      className="relative rounded-2xl bg-card border border-accent/40 px-3.5 py-2 text-center shadow-[0_16px_40px_-14px_rgb(255_111_166/0.8)] text-[13px] font-semibold text-ink whitespace-nowrap"
-    >
-      {/* tail pointing down at the call button */}
-      <span className="absolute left-1/2 -bottom-[6px] h-3 w-3 -translate-x-1/2 rotate-45 border-b border-r border-accent/40 bg-card" />
-      <AnimatePresence mode="wait" initial={false}>
-        {typed ? (
-          <motion.span key="t" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="block">
-            Call me or text me.
-            <span className="block text-[11px] font-normal text-mute">I&apos;m Gian&apos;s AI. I pick up.</span>
-          </motion.span>
-        ) : (
-          <motion.span key="d" exit={{ opacity: 0 }} className="flex gap-1.5 py-1">
-            {[0, 1, 2].map((d) => (
-              <motion.span
-                key={d}
-                animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
-                transition={{ repeat: Infinity, duration: 0.9, delay: d * 0.15 }}
-                className="h-1.5 w-1.5 rounded-full bg-accent"
-              />
-            ))}
-          </motion.span>
+      {mounted &&
+        createPortal(
+          <>
+            <ChatDialog ref={chatRef} agent={agent} />
+            <CallPanel agent={agent} open={callOpen} onClose={closeCall} />
+            <FloatingAI agent={agent} onChat={openChat} />
+          </>,
+          document.body,
         )}
-      </AnimatePresence>
-    </motion.div>
-    </div>
+    </section>
   );
 }

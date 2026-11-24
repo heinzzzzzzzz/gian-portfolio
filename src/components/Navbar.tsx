@@ -77,7 +77,7 @@ export default function Navbar() {
             <span className="script neon text-[32px] leading-none -rotate-[6deg] transition-transform duration-300 hover:-rotate-[2deg] hover:scale-105">
               GB
             </span>
-            <span data-dim className="hidden sm:inline text-[11px] uppercase tracking-[0.22em] text-mute">Automation Engineer</span>
+            <span data-dim className="hidden sm:inline text-[11px] uppercase tracking-[0.22em] text-mute">Automation Specialist</span>
           </Link>
 
           <nav data-dim aria-label="Main" className="hidden lg:flex items-center gap-1">

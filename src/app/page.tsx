@@ -1,15 +1,9 @@
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
-import WorksGrid from '@/components/WorksGrid';
-import TextReveal from '@/components/TextReveal';
-import { ServicesSection } from '@/components/ServicesSection';
-import Process from '@/components/Process';
-import Skills from '@/components/Skills';
-import About from '@/components/About';
-import Contact from '@/components/Contact';
+import ProjectShelf from '@/components/ProjectShelf';
+import Stage3D from '@/components/Stage3D';
+import { SystemsChapter, ServicesChapter, ProcessChapter, SkillsChapter, AboutChapter, ContactChapter } from '@/components/Chapters';
 import Footer from '@/components/Footer';
-import Scene from '@/components/Scene';
-import StickerToss from '@/components/StickerToss';
 
 export default function Home() {
   return (
@@ -17,20 +11,20 @@ export default function Home() {
       <Navbar />
       <div id="main" />
       <Hero />
-      {/* The page plays like a film: full-bleed shots, no frames. Each section's
-          content rises in from a slight zoom, then pushes back and fades as the
-          next shot slides up over it. */}
-      <div data-dim style={{ ['--dim-delay' as string]: '0.4s' }} className="relative z-10">
-        <StickerToss />
-        <Scene><WorksGrid /></Scene>
-        <Scene><TextReveal /></Scene>
-        <Scene><ServicesSection /></Scene>
-        <Scene className="bg-surface"><Process /></Scene>
-        <Scene><Skills /></Scene>
-        <Scene><About /></Scene>
-        <Scene><Contact /></Scene>
-        <Scene><Footer /></Scene>
+      {/* After the hero, the page is one 3D phone story: the Work shelf, then a
+          chapter per section where the phone opens an app or becomes an object. */}
+      <div className="relative z-10 bg-bg">
+        <ProjectShelf />
+        <SystemsChapter />
+        <ServicesChapter />
+        <ProcessChapter />
+        <SkillsChapter />
+        <AboutChapter />
+        <ContactChapter />
+        <Footer />
       </div>
+      {/* the 3D phone and everything it turns into, fixed over the whole page */}
+      <Stage3D />
     </main>
   );
 }

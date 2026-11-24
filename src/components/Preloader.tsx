@@ -86,7 +86,7 @@ export default function Preloader() {
           </div>
 
           <div className="relative mt-8 text-center text-[12px] uppercase tracking-[0.3em] text-mute boot-in [animation-delay:0.5s]">
-            Gian Benedict · Automation Engineer
+            Gian Benedict · Automation Specialist
           </div>
 
           <div className="absolute inset-x-5 md:inset-x-10 bottom-8 flex items-center gap-4">

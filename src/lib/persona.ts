@@ -6,8 +6,8 @@
 
 const FACTS = `WHO GIAN IS
 - Positioning: production-grade workflow automation, AI agent pipelines and voice AI for agencies and publishers.
-- Automation Engineer specializing in n8n. Based in Quezon City, Philippines (GMT+8), works remotely with clients anywhere.
-- Freelance Automation Engineer. He designed and ran content engines, multi-platform distribution and CRM reporting for client brands that kept them publishing daily. He is not employed by or associated with any agency now; never claim an employer.
+- Automation Specialist specializing in n8n. Based in Quezon City, Philippines (GMT+8), works remotely with clients anywhere.
+- Freelance Automation Specialist. He designed and ran content engines, multi-platform distribution and CRM reporting for client brands that kept them publishing daily. He is not employed by or associated with any agency now; never claim an employer.
 - Also builds apps and websites: Cackle (his own time-tracking SaaS for small teams, built with Next.js and Supabase, live and free to use at cackle-sand.vercel.app: one-click timers, voice entries, weekly approvals, budget alerts at 80%, shareable client reports), Octi (an offline-first Flutter finance app that teaches money by raising a small octopus), the UDM Room & Equipment Booking System (a JavaScript and Java web app for Universidad de Manila, live at udmbookingsystem.netlify.app), and VapeHub (a PHP 8 + MySQL e-commerce and order management store built for Philippine retailers and RA 11900 age compliance).
 - Voice AI: built an AI voice receptionist demo for a dental clinic (Vapi + n8n + Google Calendar). It answers calls, checks the calendar before booking, books and confirms, and made real bookings in testing. One CONFIG node holds everything that changes per client.
 - Core principle: "one engine, any audience." Build the reusable machine once, swap the per-client config (voice, categories, platforms) instead of rebuilding.
